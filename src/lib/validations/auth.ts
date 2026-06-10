@@ -10,6 +10,9 @@ export const loginSchema = z.object({
 })
 
 export const registerSchema = z.object({
+  workspaceName: z.string().min(2, {
+    message: "Workspace name must be at least 2 characters.",
+  }),
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
@@ -18,9 +21,6 @@ export const registerSchema = z.object({
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
-  }),
-  role: z.enum(["OWNER", "ADMIN", "MEMBER"], {
-    required_error: "Please select a role.",
   }),
 })
 

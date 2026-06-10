@@ -20,10 +20,10 @@ export default function RegisterPage() {
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      workspaceName: "",
       name: "",
       email: "",
       password: "",
-      role: "MEMBER",
     },
   })
 
@@ -40,7 +40,7 @@ export default function RegisterPage() {
             setSuccess(data.success)
             // Optionally, redirect after a short delay
             setTimeout(() => {
-              router.push("/login")
+              router.push("/dashboard")
             }, 2000)
           }
         })
@@ -62,7 +62,21 @@ export default function RegisterPage() {
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Name</label>
+            <label className="text-sm font-medium text-neutral-300">Workspace Name</label>
+            <input
+              {...form.register("workspaceName")}
+              type="text"
+              placeholder="Acme Corp"
+              disabled={isPending}
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all"
+            />
+            {form.formState.errors.workspaceName && (
+              <p className="text-sm text-red-400 mt-1">{form.formState.errors.workspaceName.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-neutral-300">Your Name</label>
             <input
               {...form.register("name")}
               type="text"
@@ -103,21 +117,7 @@ export default function RegisterPage() {
             )}
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Role</label>
-            <select
-              {...form.register("role")}
-              disabled={isPending}
-              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all appearance-none"
-            >
-              <option value="MEMBER" className="bg-[#070B14] text-white">Member</option>
-              <option value="ADMIN" className="bg-[#070B14] text-white">Admin</option>
-              <option value="OWNER" className="bg-[#070B14] text-white">Owner</option>
-            </select>
-            {form.formState.errors.role && (
-              <p className="text-sm text-red-400 mt-1">{form.formState.errors.role.message}</p>
-            )}
-          </div>
+
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm text-center">

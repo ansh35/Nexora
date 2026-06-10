@@ -5,7 +5,7 @@ export const authConfig = {
     signIn: "/login",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
+    authorized() {
       return true; // Defer to middleware.ts explicit redirect logic
     },
     async jwt({ token, user, trigger, session }) {

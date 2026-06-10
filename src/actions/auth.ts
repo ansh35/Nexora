@@ -5,7 +5,6 @@ import prisma from "@/lib/prisma"
 import { signIn, signOut } from "@/../auth"
 import { loginSchema, registerSchema, LoginInput, RegisterInput } from "@/lib/validations/auth"
 import { AuthError } from "next-auth"
-import { revalidatePath } from "next/cache"
 
 export async function register(data: RegisterInput) {
   try {
@@ -15,7 +14,7 @@ export async function register(data: RegisterInput) {
       return { error: "Invalid fields" }
     }
 
-    const { email, name, password, role } = validatedData.data
+    const { email, name, password, workspaceName } = validatedData.data
 
     const existingUser = await prisma.user.findUnique({
       where: { email }
@@ -27,17 +26,47 @@ export async function register(data: RegisterInput) {
 
     const hashedPassword = await bcryptjs.hash(password, 10)
 
+    const baseSlug = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
+    let finalSlug = baseSlug
+    let counter = 1
+    while (await prisma.organization.findUnique({ where: { slug: finalSlug } })) {
+      finalSlug = `${baseSlug}-${counter}`
+      counter++
+    }
+
+    const organization = await prisma.organization.create({
+      data: {
+        name: workspaceName,
+        slug: finalSlug,
+      }
+    })
+
     await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role,
+        role: "OWNER",
+        organizationId: organization.id,
       }
     })
 
-    return { success: "User registered successfully! You can now log in." }
+    await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    })
+
+    return { success: "User registered successfully! Redirecting to dashboard..." }
   } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: "Something went wrong during sign-in" }
+    }
+    // NextAuth throws a redirect error on success sometimes, let it propagate
+    if (error && typeof error === 'object' && 'digest' in error && String(error.digest).startsWith('NEXT_REDIRECT')) {
+      throw error
+    }
+    
     console.error("Register Error:", error)
     return { error: "Something went wrong during registration" }
   }
