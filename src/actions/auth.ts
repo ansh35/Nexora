@@ -34,20 +34,18 @@ export async function register(data: RegisterInput) {
       counter++
     }
 
-    const organization = await prisma.organization.create({
+    await prisma.organization.create({
       data: {
         name: workspaceName,
         slug: finalSlug,
-      }
-    })
-
-    await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        role: "OWNER",
-        organizationId: organization.id,
+        users: {
+          create: {
+            name,
+            email,
+            password: hashedPassword,
+            role: "OWNER",
+          }
+        }
       }
     })
 

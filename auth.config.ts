@@ -1,12 +1,18 @@
 import type { NextAuthConfig } from "next-auth";
-
 export const authConfig = {
   pages: {
     signIn: "/login",
   },
   callbacks: {
-    authorized() {
-      return true; // Defer to middleware.ts explicit redirect logic
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+
+      if (isOnDashboard) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      }
+      return true;
     },
     async jwt({ token, user, trigger, session }) {
       if (user) {
