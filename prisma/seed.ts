@@ -9,6 +9,9 @@ async function main() {
   const defaultPassword = "password123"
   const passwordHash = await bcrypt.hash(defaultPassword, 10)
 
+  await prisma.task.deleteMany({})
+  await prisma.project.deleteMany({})
+
   // 1. Nexora Demo Workspace
   const nexoraOrg = await prisma.organization.upsert({
     where: { slug: "nexora-demo-workspace" },
@@ -28,6 +31,8 @@ async function main() {
     { email: "member3@nexora.dev", name: "Member 3", role: "MEMBER" },
   ]
 
+  const createdNexoraUsers: Record<string, { id: string }> = {}
+
   for (const user of nexoraUsers) {
     const dbUser = await prisma.user.upsert({
       where: { email: user.email },
@@ -43,7 +48,47 @@ async function main() {
         organizationId: nexoraOrg.id,
       },
     })
+    createdNexoraUsers[user.email] = dbUser
     console.log(`User seeded: ${dbUser.email} (${dbUser.role}) in ${nexoraOrg.name}`)
+  }
+
+  const nexoraProjects = [
+    { name: "Nexora Marketing Site", description: "The main marketing landing page for Nexora." },
+    { name: "Internal Admin Dashboard", description: "Management portal for internal team operations." },
+    { name: "Mobile App MVP", description: "React Native mobile application prototype." }
+  ]
+
+  let firstNexoraProject = null;
+
+  for (const proj of nexoraProjects) {
+    const dbProj = await prisma.project.create({
+      data: {
+        name: proj.name,
+        description: proj.description,
+        organizationId: nexoraOrg.id,
+      }
+    })
+    if (!firstNexoraProject) firstNexoraProject = dbProj;
+    console.log(`Project seeded: ${dbProj.name} in ${nexoraOrg.name}`)
+  }
+
+  if (firstNexoraProject) {
+    const nexoraTasks = [
+      { title: "Design Landing Page UI", description: "Create Figma mockups.", status: "TODO", priority: "HIGH", assigneeId: createdNexoraUsers["member1@nexora.dev"].id },
+      { title: "Setup Next.js Boilerplate", description: "Initialize app router.", status: "IN_PROGRESS", priority: "MEDIUM", assigneeId: createdNexoraUsers["admin@nexora.dev"].id },
+      { title: "Write Copywriting", description: "Draft the hero section copy.", status: "DONE", priority: "LOW", assigneeId: null }
+    ]
+
+    for (const task of nexoraTasks) {
+      await prisma.task.create({
+        data: {
+          ...task,
+          organizationId: nexoraOrg.id,
+          projectId: firstNexoraProject.id
+        }
+      })
+      console.log(`Task seeded: ${task.title}`)
+    }
   }
 
   // 2. Acme Workspace
@@ -63,6 +108,8 @@ async function main() {
     { email: "member@acme.com", name: "Acme Member", role: "MEMBER" },
   ]
 
+  const createdAcmeUsers: Record<string, { id: string }> = {}
+
   for (const user of acmeUsers) {
     const dbUser = await prisma.user.upsert({
       where: { email: user.email },
@@ -78,7 +125,45 @@ async function main() {
         organizationId: acmeOrg.id,
       },
     })
+    createdAcmeUsers[user.email] = dbUser
     console.log(`User seeded: ${dbUser.email} (${dbUser.role}) in ${acmeOrg.name}`)
+  }
+
+  const acmeProjects = [
+    { name: "Acme E-commerce Platform", description: "B2C online store redesign and platform migration." },
+    { name: "Q3 Marketing Campaign", description: "Global brand awareness initiative." }
+  ]
+
+  let firstAcmeProject = null;
+
+  for (const proj of acmeProjects) {
+    const dbProj = await prisma.project.create({
+      data: {
+        name: proj.name,
+        description: proj.description,
+        organizationId: acmeOrg.id,
+      }
+    })
+    if (!firstAcmeProject) firstAcmeProject = dbProj;
+    console.log(`Project seeded: ${dbProj.name} in ${acmeOrg.name}`)
+  }
+
+  if (firstAcmeProject) {
+    const acmeTasks = [
+      { title: "Migrate Payment Gateway", description: "Switch to Stripe integration.", status: "IN_PROGRESS", priority: "HIGH", assigneeId: createdAcmeUsers["admin@acme.com"].id },
+      { title: "Update Product Catalog", description: "Import CSV dump.", status: "TODO", priority: "MEDIUM", assigneeId: createdAcmeUsers["member@acme.com"].id }
+    ]
+
+    for (const task of acmeTasks) {
+      await prisma.task.create({
+        data: {
+          ...task,
+          organizationId: acmeOrg.id,
+          projectId: firstAcmeProject.id
+        }
+      })
+      console.log(`Task seeded: ${task.title}`)
+    }
   }
 
   console.log("Database seeding completed.")
