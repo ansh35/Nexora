@@ -5,6 +5,9 @@ import prisma from "@/lib/prisma"
 import { signIn, signOut } from "@/../auth"
 import { loginSchema, registerSchema, LoginInput, RegisterInput } from "@/lib/validations/auth"
 import { AuthError } from "next-auth"
+import { generateVerificationToken, generatePasswordResetToken } from "@/lib/tokens"
+import { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email/service"
+import { logActivity } from "@/lib/activity"
 
 export async function register(data: RegisterInput) {
   try {
@@ -34,7 +37,7 @@ export async function register(data: RegisterInput) {
       counter++
     }
 
-    await prisma.organization.create({
+    const newOrg = await prisma.organization.create({
       data: {
         name: workspaceName,
         slug: finalSlug,
@@ -46,16 +49,35 @@ export async function register(data: RegisterInput) {
             role: "OWNER",
           }
         }
+      },
+      include: {
+        users: true
       }
     })
 
+    const newUser = newOrg.users[0]
+
+    await logActivity({
+      organizationId: newOrg.id,
+      userId: newUser.id,
+      action: "Created organization",
+      entityType: "ORGANIZATION",
+      entityId: newOrg.id,
+      entityName: newOrg.name
+    })
+
+    const verificationToken = await generateVerificationToken(email)
+    await sendVerificationEmail(verificationToken.email, verificationToken.token)
+
+    // Optional: Keep them logged out until they verify, or log them in. 
+    // For now we'll log them in but they may need to verify.
     await signIn("credentials", {
       email,
       password,
       redirect: false,
     })
 
-    return { success: "User registered successfully! Redirecting to dashboard..." }
+    return { success: "Registration successful! A verification email has been sent." }
   } catch (error) {
     if (error instanceof AuthError) {
       return { error: "Something went wrong during sign-in" }
@@ -104,4 +126,112 @@ export async function login(data: LoginInput) {
 
 export async function logout() {
   await signOut({ redirectTo: "/login" })
+}
+
+export async function verifyEmail(token: string) {
+  try {
+    const existingToken = await prisma.verificationToken.findUnique({
+      where: { token }
+    })
+
+    if (!existingToken) {
+      return { error: "Token does not exist!" }
+    }
+
+    const hasExpired = new Date(existingToken.expiresAt) < new Date()
+
+    if (hasExpired) {
+      return { error: "Token has expired!" }
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email: existingToken.email }
+    })
+
+    if (!existingUser) {
+      return { error: "Email does not exist!" }
+    }
+
+    await prisma.user.update({
+      where: { id: existingUser.id },
+      data: {
+        emailVerified: new Date(),
+        email: existingToken.email,
+      }
+    })
+
+    await prisma.verificationToken.delete({
+      where: { id: existingToken.id }
+    })
+
+    // Send Welcome Email upon successful verification
+    await sendWelcomeEmail(existingUser.email, existingUser.name)
+
+    return { success: "Email verified successfully!" }
+  } catch (error) {
+    console.error("Verification Error:", error)
+    return { error: "Something went wrong during verification" }
+  }
+}
+
+export async function resetPasswordRequest(email: string) {
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    })
+
+    if (!existingUser) {
+      return { error: "Email not found!" }
+    }
+
+    const passwordResetToken = await generatePasswordResetToken(email)
+    await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
+
+    return { success: "Reset email sent!" }
+  } catch (error) {
+    console.error("Reset Request Error:", error)
+    return { error: "Something went wrong sending reset email" }
+  }
+}
+
+export async function resetPassword(token: string, password: string) {
+  try {
+    const existingToken = await prisma.passwordResetToken.findUnique({
+      where: { token }
+    })
+
+    if (!existingToken) {
+      return { error: "Invalid token!" }
+    }
+
+    const hasExpired = new Date(existingToken.expiresAt) < new Date()
+
+    if (hasExpired) {
+      return { error: "Token has expired!" }
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email: existingToken.email }
+    })
+
+    if (!existingUser) {
+      return { error: "Email does not exist!" }
+    }
+
+    const hashedPassword = await bcryptjs.hash(password, 10)
+
+    await prisma.user.update({
+      where: { id: existingUser.id },
+      data: { password: hashedPassword }
+    })
+
+    await prisma.passwordResetToken.delete({
+      where: { id: existingToken.id }
+    })
+
+    return { success: "Password updated successfully!" }
+  } catch (error) {
+    console.error("Reset Password Error:", error)
+    return { error: "Something went wrong updating password" }
+  }
 }

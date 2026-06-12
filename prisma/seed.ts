@@ -76,7 +76,13 @@ async function main() {
     const nexoraTasks = [
       { title: "Design Landing Page UI", description: "Create Figma mockups.", status: "TODO", priority: "HIGH", assigneeId: createdNexoraUsers["member1@nexora.dev"].id },
       { title: "Setup Next.js Boilerplate", description: "Initialize app router.", status: "IN_PROGRESS", priority: "MEDIUM", assigneeId: createdNexoraUsers["admin@nexora.dev"].id },
-      { title: "Write Copywriting", description: "Draft the hero section copy.", status: "DONE", priority: "LOW", assigneeId: null }
+      { title: "Write Copywriting", description: "Draft the hero section copy.", status: "DONE", priority: "LOW", assigneeId: null },
+      { title: "Implement Kanban Board", description: "Use dnd-kit for drag and drop.", status: "IN_PROGRESS", priority: "HIGH", assigneeId: createdNexoraUsers["owner@nexora.dev"].id },
+      { title: "Review Auth Flow", description: "Check session handling in NextAuth.", status: "TODO", priority: "MEDIUM", assigneeId: createdNexoraUsers["member2@nexora.dev"].id },
+      { title: "Fix API Rate Limiting", description: "Users are getting 429 too often.", status: "TODO", priority: "HIGH", assigneeId: createdNexoraUsers["member3@nexora.dev"].id },
+      { title: "Update README", description: "Add instructions for local setup.", status: "DONE", priority: "LOW", assigneeId: createdNexoraUsers["member1@nexora.dev"].id },
+      { title: "Configure Vercel Deployment", description: "Set environment variables for production.", status: "TODO", priority: "HIGH", assigneeId: null },
+      { title: "Create Marketing Assets", description: "Social media banners.", status: "IN_PROGRESS", priority: "LOW", assigneeId: createdNexoraUsers["member2@nexora.dev"].id }
     ]
 
     for (const task of nexoraTasks) {

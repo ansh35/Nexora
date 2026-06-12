@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Search, Folder, ListTodo, User } from "lucide-react"
+import { Search, Folder, ListTodo, User, UserPlus, Users } from "lucide-react"
 import { globalSearch } from "@/actions/search"
 import { useRouter } from "next/navigation"
 
@@ -90,8 +90,26 @@ export function CommandPalette() {
 
         <div className="max-h-[60vh] overflow-y-auto p-2">
           {!query && (
-            <div className="p-8 text-center text-neutral-500 text-sm">
-              Type to search across your entire workspace...
+            <div className="p-2 space-y-1">
+              <h3 className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-2">Quick Actions</h3>
+              <button
+                onClick={() => handleNavigate(`/dashboard/team?invite=true`)}
+                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.05] rounded-xl transition-colors text-left group"
+              >
+                <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
+                  <UserPlus className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
+                </div>
+                <div className="text-sm font-medium text-white">Invite Member</div>
+              </button>
+              <button
+                onClick={() => handleNavigate(`/dashboard/team`)}
+                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.05] rounded-xl transition-colors text-left group"
+              >
+                <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
+                  <Users className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
+                </div>
+                <div className="text-sm font-medium text-white">Open Team Directory</div>
+              </button>
             </div>
           )}
 

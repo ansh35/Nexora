@@ -56,6 +56,12 @@ export function KanbanBoard({
 }: KanbanBoardProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    // eslint-disable-next-line
+    setIsMounted(true)
+  }, [])
 
   const [prevInitialTasks, setPrevInitialTasks] = useState(initialTasks)
 
@@ -157,6 +163,18 @@ export function KanbanBoard({
     if (originalTask && originalTask.status !== task.status) {
       updateStatusMutation.mutate({ taskId: task.id, status: task.status })
     }
+  }
+
+  if (!isMounted) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-[600px]">
+        {COLUMNS.map((col) => (
+          <div key={col.id} className="bg-white/[0.02] border border-white/5 rounded-[24px] p-4 h-full flex flex-col items-center justify-center">
+            <span className="text-neutral-500 font-medium text-sm animate-pulse">Loading {col.title}...</span>
+          </div>
+        ))}
+      </div>
+    )
   }
 
   return (

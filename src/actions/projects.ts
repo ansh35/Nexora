@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma"
 import { auth } from "@/../auth"
 import { revalidatePath } from "next/cache"
+import { logActivity } from "@/lib/activity"
 
 export async function createProject(data: { name: string; description?: string }) {
   const session = await auth()
@@ -26,6 +27,15 @@ export async function createProject(data: { name: string; description?: string }
         description: data.description,
         organizationId: session.user.organizationId,
       }
+    })
+
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Created project",
+      entityType: "PROJECT",
+      entityId: project.id,
+      entityName: project.name
     })
 
     revalidatePath("/dashboard")
@@ -69,6 +79,15 @@ export async function updateProject(id: string, data: { name: string; descriptio
       }
     })
 
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Updated project",
+      entityType: "PROJECT",
+      entityId: project.id,
+      entityName: project.name
+    })
+
     revalidatePath("/dashboard")
     return { success: true }
   } catch (error) {
@@ -102,6 +121,15 @@ export async function archiveProject(id: string) {
       data: { status: "ARCHIVED" }
     })
 
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Archived project",
+      entityType: "PROJECT",
+      entityId: project.id,
+      entityName: project.name
+    })
+
     revalidatePath("/dashboard")
     return { success: true }
   } catch (error) {
@@ -133,6 +161,15 @@ export async function deleteProject(id: string) {
 
     await prisma.project.delete({
       where: { id }
+    })
+
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Deleted project",
+      entityType: "PROJECT",
+      entityId: project.id,
+      entityName: project.name
     })
 
     revalidatePath("/dashboard")

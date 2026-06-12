@@ -5,39 +5,37 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
-import { loginSchema } from "@/lib/validations/auth"
-import { login } from "@/actions/auth"
+import { resetPasswordRequest } from "@/actions/auth"
 
-export default function LoginPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
-  
+const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+})
+
+export default function ForgotPasswordPage() {
   const [error, setError] = useState<string | undefined>("")
+  const [success, setSuccess] = useState<string | undefined>("")
   const [isPending, startTransition] = useTransition()
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   })
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = (values: z.infer<typeof forgotPasswordSchema>) => {
     setError("")
+    setSuccess("")
 
     startTransition(() => {
-      login(values)
+      resetPasswordRequest(values.email)
         .then((data) => {
-          if (data?.error) {
+          if (data.error) {
             setError(data.error)
-          } else {
-            router.push(callbackUrl)
-            router.refresh()
+          } else if (data.success) {
+            setSuccess(data.success)
           }
         })
         .catch(() => setError("Something went wrong!"))
@@ -49,10 +47,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white/[0.05] border border-white/10 p-8 rounded-[24px] backdrop-blur-xl shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">
-            Welcome Back
+            Forgot Password
           </h1>
           <p className="text-sm text-neutral-400">
-            Sign in to your Nexora account
+            Enter your email to receive a password reset link
           </p>
         </div>
 
@@ -71,28 +69,15 @@ export default function LoginPage() {
             )}
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-neutral-300">Password</label>
-              <Link href="/forgot-password" className="text-xs text-[#22D3EE] hover:text-[#06B6D4] transition-colors">
-                Forgot password?
-              </Link>
-            </div>
-            <input
-              {...form.register("password")}
-              type="password"
-              placeholder="••••••••"
-              disabled={isPending}
-              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all"
-            />
-            {form.formState.errors.password && (
-              <p className="text-sm text-red-400 mt-1">{form.formState.errors.password.message}</p>
-            )}
-          </div>
-
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm text-center">
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-[#22D3EE]/10 border border-[#22D3EE]/20 text-[#22D3EE] p-3 rounded-xl text-sm text-center">
+              {success}
             </div>
           )}
 
@@ -104,15 +89,15 @@ export default function LoginPage() {
             {isPending ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              "Sign In"
+              "Send Reset Link"
             )}
           </button>
         </form>
 
         <div className="mt-8 text-center text-sm text-neutral-400">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-[#22D3EE] hover:text-[#06B6D4] font-medium transition-colors">
-            Register now
+          Remember your password?{" "}
+          <Link href="/login" className="text-[#22D3EE] hover:text-[#06B6D4] font-medium transition-colors">
+            Sign in
           </Link>
         </div>
       </div>

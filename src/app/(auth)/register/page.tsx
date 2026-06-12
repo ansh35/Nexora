@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
 import { registerSchema } from "@/lib/validations/auth"
@@ -13,6 +13,9 @@ import { register } from "@/actions/auth"
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+
   const [error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")
   const [isPending, startTransition] = useTransition()
@@ -40,7 +43,7 @@ export default function RegisterPage() {
             setSuccess(data.success)
             // Optionally, redirect after a short delay
             setTimeout(() => {
-              router.push("/dashboard")
+              router.push(callbackUrl)
             }, 2000)
           }
         })

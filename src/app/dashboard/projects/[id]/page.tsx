@@ -2,10 +2,12 @@ import { auth } from "@/../auth"
 import { redirect } from "next/navigation"
 import prisma from "@/lib/prisma"
 import { TaskDashboard } from "@/components/tasks/TaskDashboard"
+import { ActivityFeedPopover } from "@/components/activity/ActivityFeedPopover"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
-export default async function ProjectDetailsPage({ params }: { params: { id: string } }) {
+export default async function ProjectDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth()
 
   if (!session?.user?.organizationId) {
@@ -14,7 +16,7 @@ export default async function ProjectDetailsPage({ params }: { params: { id: str
 
   const project = await prisma.project.findFirst({
     where: { 
-      id: params.id,
+      id: id,
       organizationId: session.user.organizationId 
     }
   })
@@ -39,7 +41,7 @@ export default async function ProjectDetailsPage({ params }: { params: { id: str
   return (
     <div className="min-h-screen bg-[#070B14] p-8 text-white font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
-        <header className="flex flex-col gap-4 bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
+        <header className="relative z-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard"
@@ -58,6 +60,9 @@ export default async function ProjectDetailsPage({ params }: { params: { id: str
               </div>
               <p className="text-neutral-400 text-sm mt-1">{project.description || "No description."}</p>
             </div>
+          </div>
+          <div className="flex items-center gap-4 self-end sm:self-auto">
+            <ActivityFeedPopover />
           </div>
         </header>
 

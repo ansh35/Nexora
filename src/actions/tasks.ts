@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma"
 import { auth } from "@/../auth"
 import { revalidatePath } from "next/cache"
+import { logActivity } from "@/lib/activity"
 
 type TaskData = {
   title: string
@@ -29,6 +30,16 @@ export async function createTask(projectId: string, data: TaskData) {
         organizationId: session.user.organizationId,
       }
     })
+    
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Created task",
+      entityType: "TASK",
+      entityId: task.id,
+      entityName: task.title
+    })
+
     revalidatePath(`/dashboard/projects/${projectId}`)
     return { success: true, task }
   } catch (error) {
@@ -58,6 +69,16 @@ export async function editTask(id: string, data: TaskData) {
         priority: data.priority,
       }
     })
+
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Updated task",
+      entityType: "TASK",
+      entityId: task.id,
+      entityName: task.title
+    })
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
     return { success: true }
   } catch (error) {
@@ -90,6 +111,16 @@ export async function assignTask(id: string, assigneeId: string | null) {
       where: { id },
       data: { assigneeId }
     })
+
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: assigneeId ? "Assigned task" : "Unassigned task",
+      entityType: "TASK",
+      entityId: task.id,
+      entityName: task.title
+    })
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
     return { success: true }
   } catch (error) {
@@ -119,6 +150,16 @@ export async function updateTaskStatus(id: string, status: string) {
       where: { id },
       data: { status }
     })
+
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: `Moved task to ${status}`,
+      entityType: "TASK",
+      entityId: task.id,
+      entityName: task.title
+    })
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
     return { success: true }
   } catch (error) {
@@ -140,6 +181,16 @@ export async function deleteTask(id: string) {
     if (!task) return { error: "Task not found" }
 
     await prisma.task.delete({ where: { id } })
+
+    await logActivity({
+      organizationId: session.user.organizationId,
+      userId: session.user.id,
+      action: "Deleted task",
+      entityType: "TASK",
+      entityId: task.id,
+      entityName: task.title
+    })
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
     return { success: true }
   } catch (error) {
