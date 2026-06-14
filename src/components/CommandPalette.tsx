@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Search, Folder, ListTodo, User, UserPlus, Users } from "lucide-react"
+import { useState, useEffect, useRef, useCallback } from "react"
+import { Search, Folder, ListTodo, User, UserPlus, Users, Settings } from "lucide-react"
 import { globalSearch } from "@/actions/search"
 import { useRouter } from "next/navigation"
 
@@ -18,6 +18,7 @@ export function CommandPalette() {
     members: MemberType[]
   }>({ projects: [], tasks: [], members: [] })
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0)
   
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -48,26 +49,65 @@ export function CommandPalette() {
     }
   }, [isOpen])
 
+  const handleNavigate = useCallback((path: string) => {
+    setIsOpen(false)
+    router.push(path)
+  }, [router])
+
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (query.trim()) {
         setIsLoading(true)
         const res = await globalSearch(query)
         setResults(res)
+        setSelectedIndex(0) // Reset selection on new search
         setIsLoading(false)
       } else {
         setResults({ projects: [], tasks: [], members: [] })
+        setSelectedIndex(0)
       }
     }, 300)
     return () => clearTimeout(timer)
   }, [query])
 
-  if (!isOpen) return null
+  const flattenResults = useCallback(() => {
+    if (!query) {
+      return [
+        { type: "action", id: "action-invite", path: "/dashboard/team?invite=true" },
+        { type: "action", id: "action-team", path: "/dashboard/team" },
+        { type: "action", id: "action-settings", path: "/dashboard/settings" }
+      ]
+    }
+    const flat: { type: string, id: string, path: string }[] = []
+    results.projects.forEach(p => flat.push({ type: "project", id: p.id, path: `/dashboard/projects/${p.id}` }))
+    results.tasks.forEach(t => flat.push({ type: "task", id: t.id, path: `/dashboard/projects/${t.projectId}` }))
+    results.members.forEach(m => flat.push({ type: "member", id: m.id, path: "" })) // members don't navigate yet
+    return flat
+  }, [query, results])
 
-  const handleNavigate = (path: string) => {
-    setIsOpen(false)
-    router.push(path)
-  }
+  useEffect(() => {
+    const handleNavigation = (e: KeyboardEvent) => {
+      if (!isOpen) return
+      const flat = flattenResults()
+      if (e.key === "ArrowDown") {
+        e.preventDefault()
+        setSelectedIndex(prev => (prev + 1) % flat.length)
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault()
+        setSelectedIndex(prev => (prev - 1 + flat.length) % flat.length)
+      } else if (e.key === "Enter") {
+        e.preventDefault()
+        if (flat.length > 0) {
+          const selected = flat[selectedIndex]
+          if (selected.path) handleNavigate(selected.path)
+        }
+      }
+    }
+    window.addEventListener("keydown", handleNavigation)
+    return () => window.removeEventListener("keydown", handleNavigation)
+  }, [isOpen, selectedIndex, flattenResults, handleNavigate])
+
+  if (!isOpen) return null
 
   const hasResults = results.projects.length > 0 || results.tasks.length > 0 || results.members.length > 0
 
@@ -94,7 +134,7 @@ export function CommandPalette() {
               <h3 className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-2">Quick Actions</h3>
               <button
                 onClick={() => handleNavigate(`/dashboard/team?invite=true`)}
-                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.05] rounded-xl transition-colors text-left group"
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors text-left group ${selectedIndex === 0 ? "bg-white/[0.05]" : "hover:bg-white/[0.05]"}`}
               >
                 <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
                   <UserPlus className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
@@ -103,12 +143,27 @@ export function CommandPalette() {
               </button>
               <button
                 onClick={() => handleNavigate(`/dashboard/team`)}
-                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.05] rounded-xl transition-colors text-left group"
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors text-left group ${selectedIndex === 1 ? "bg-white/[0.05]" : "hover:bg-white/[0.05]"}`}
               >
                 <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
                   <Users className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
                 </div>
-                <div className="text-sm font-medium text-white">Open Team Directory</div>
+                <div>
+                  <div className="text-sm font-medium text-white group-hover:text-[#22D3EE] transition-colors">Team Directory</div>
+                  <div className="text-xs text-neutral-500">View team members</div>
+                </div>
+              </button>
+              <button
+                onClick={() => handleNavigate(`/dashboard/settings`)}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors text-left group ${selectedIndex === 2 ? "bg-white/[0.05]" : "hover:bg-white/[0.05]"}`}
+              >
+                <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
+                  <Settings className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-white group-hover:text-[#22D3EE] transition-colors">Account Settings</div>
+                  <div className="text-xs text-neutral-500">Update your profile</div>
+                </div>
               </button>
             </div>
           )}
@@ -122,11 +177,13 @@ export function CommandPalette() {
           {results.projects.length > 0 && (
             <div className="mb-4">
               <h3 className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-2">Projects</h3>
-              {results.projects.map((p) => (
+              {results.projects.map((p, idx) => {
+                const globalIndex = idx;
+                return (
                 <button
                   key={p.id}
                   onClick={() => handleNavigate(`/dashboard/projects/${p.id}`)}
-                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.05] rounded-xl transition-colors text-left group"
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors text-left group ${selectedIndex === globalIndex ? "bg-white/[0.05]" : "hover:bg-white/[0.05]"}`}
                 >
                   <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
                     <Folder className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
@@ -136,18 +193,20 @@ export function CommandPalette() {
                     {p.description && <div className="text-xs text-neutral-500 truncate max-w-md">{p.description}</div>}
                   </div>
                 </button>
-              ))}
+              )})}
             </div>
           )}
 
           {results.tasks.length > 0 && (
             <div className="mb-4">
               <h3 className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-2">Tasks</h3>
-              {results.tasks.map((t) => (
+              {results.tasks.map((t, idx) => {
+                const globalIndex = results.projects.length + idx;
+                return (
                 <button
                   key={t.id}
                   onClick={() => handleNavigate(`/dashboard/projects/${t.projectId}`)}
-                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.05] rounded-xl transition-colors text-left group"
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors text-left group ${selectedIndex === globalIndex ? "bg-white/[0.05]" : "hover:bg-white/[0.05]"}`}
                 >
                   <div className="p-2 bg-white/[0.05] rounded-lg group-hover:text-[#22D3EE] group-hover:bg-[#22D3EE]/10 transition-colors">
                     <ListTodo className="w-4 h-4 text-neutral-400 group-hover:text-[#22D3EE]" />
@@ -168,17 +227,19 @@ export function CommandPalette() {
                     </div>
                   </div>
                 </button>
-              ))}
+              )})}
             </div>
           )}
 
           {results.members.length > 0 && (
             <div className="mb-2">
               <h3 className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-2">Members</h3>
-              {results.members.map((m) => (
+              {results.members.map((m, idx) => {
+                const globalIndex = results.projects.length + results.tasks.length + idx;
+                return (
                 <div
                   key={m.id}
-                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/[0.02] rounded-xl transition-colors text-left"
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors text-left ${selectedIndex === globalIndex ? "bg-white/[0.05]" : "hover:bg-white/[0.02]"}`}
                 >
                   <div className="p-2 bg-white/[0.05] rounded-lg">
                     <User className="w-4 h-4 text-neutral-400" />
@@ -188,7 +249,7 @@ export function CommandPalette() {
                     <div className="text-xs text-neutral-500">{m.email}</div>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </div>

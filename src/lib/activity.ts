@@ -22,7 +22,7 @@ export async function logActivity({
   details
 }: LogActivityProps) {
   try {
-    await prisma.activity.create({
+    const activity = await prisma.activity.create({
       data: {
         organizationId,
         userId,
@@ -31,8 +31,18 @@ export async function logActivity({
         entityId,
         entityName,
         details
+      },
+      include: {
+        user: { select: { id: true, name: true, image: true } }
       }
     })
+
+    const { pusherServer } = await import("@/lib/pusher")
+    await pusherServer.trigger(
+      `private-org-${organizationId}`,
+      "new-activity",
+      activity
+    )
   } catch (error) {
     console.error("Failed to log activity:", error)
   }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Bell, Loader2 } from "lucide-react"
 import { getActivities } from "@/actions/activity"
 import { formatDistanceToNow } from "date-fns"
+import { usePusher } from "@/components/providers/PusherProvider"
 
 type Activity = {
   id: string
@@ -19,7 +20,7 @@ type Activity = {
   }
 }
 
-export function ActivityFeedPopover() {
+export function ActivityFeedPopover({ organizationId }: { organizationId?: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(false)
@@ -43,6 +44,23 @@ export function ActivityFeedPopover() {
     }
     checkNewActivity()
   }, [])
+
+  const { pusherClient } = usePusher()
+
+  useEffect(() => {
+    if (!pusherClient || !organizationId) return
+
+    const channel = pusherClient.subscribe(`private-org-${organizationId}`)
+
+    channel.bind("new-activity", (activity: Activity) => {
+      setHasNew(true)
+      setActivities(prev => [activity, ...prev])
+    })
+
+    return () => {
+      pusherClient.unsubscribe(`private-org-${organizationId}`)
+    }
+  }, [pusherClient, organizationId])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,6 +106,7 @@ export function ActivityFeedPopover() {
   return (
     <div className="relative" ref={popoverRef}>
       <button
+        suppressHydrationWarning
         onClick={togglePopover}
         className="p-2.5 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white rounded-xl transition-colors border border-white/10 relative"
       >
@@ -121,6 +140,7 @@ export function ActivityFeedPopover() {
                   <div key={activity.id} className="flex gap-3 p-3 hover:bg-white/[0.04] rounded-xl transition-colors">
                     <div className="w-8 h-8 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-xs font-medium text-white overflow-hidden">
                       {activity.user.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={activity.user.image} alt={activity.user.name} className="w-full h-full object-cover" />
                       ) : (
                         activity.user.name.charAt(0).toUpperCase()

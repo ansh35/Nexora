@@ -14,11 +14,20 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users       User[]
-  projects    Project[]
-  tasks       Task[]
-  invitations Invitation[]
-  Activity    Activity[]
+  users         User[]
+  projects      Project[]
+  tasks         Task[]
+  invitations   Invitation[]
+  Activity      Activity[]
+  notifications Notification[]
+  taskComments  TaskComment[]
+  aiUsage       AiUsage[]
+
+  billingProvider         String?   @default("developer")
+  subscriptionPlan        String    @default("free")
+  subscriptionStatus      String    @default("ACTIVE")
+  subscriptionActivatedAt DateTime?
+  subscriptionExpiresAt   DateTime?
 }
 
 model User {
@@ -36,9 +45,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tasksAssigned   Task[]       @relation("TaskAssignee")
-  invitationsSent Invitation[] @relation("UserInvitations")
+  tasksAssigned   Task[]         @relation("TaskAssignee")
+  invitationsSent Invitation[]   @relation("UserInvitations")
   Activity        Activity[]
+  projectsOwned   Project[]      @relation("ProjectOwner")
+  notifications   Notification[] @relation("UserNotifications")
+  comments        TaskComment[]
+  aiUsage         AiUsage[]
 
   @@index([organizationId])
 }
@@ -52,12 +65,16 @@ model Project {
   organizationId String       @db.ObjectId
   organization   Organization @relation(fields: [organizationId], references: [id])
 
+  ownerId String? @db.ObjectId
+  owner   User?   @relation("ProjectOwner", fields: [ownerId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   tasks Task[]
 
   @@index([organizationId])
+  @@index([ownerId])
 }
 
 model Task {
@@ -78,6 +95,8 @@ model Task {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  comments TaskComment[]
 
   @@index([organizationId])
   @@index([projectId])
@@ -137,4 +156,58 @@ model Activity {
   @@index([organizationId])
   @@index([userId])
   @@index([createdAt])
+}
+
+model Notification {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  organizationId String   @db.ObjectId
+  type           String
+  message        String
+  read           Boolean  @default(false)
+  link           String?
+  createdAt      DateTime @default(now())
+
+  user         User         @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([createdAt])
+}
+
+model TaskComment {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  text           String
+  taskId         String   @db.ObjectId
+  userId         String   @db.ObjectId
+  organizationId String   @db.ObjectId
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  task         Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([organizationId])
+  @@index([createdAt])
+}
+
+model AiUsage {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  organizationId  String   @db.ObjectId
+  userId          String   @db.ObjectId
+  feature         String
+  requestsUsed    Int      @default(1)
+  estimatedTokens Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([userId])
 }

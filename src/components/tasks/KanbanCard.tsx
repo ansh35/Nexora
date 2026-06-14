@@ -104,7 +104,7 @@ export function KanbanCard({
               disabled={!canEdit}
               value={task.assigneeId || "UNASSIGNED"}
               onChange={(e) => onAssign(task.id, e.target.value)}
-              className="bg-white/[0.04] border border-white/10 text-[10px] text-white rounded-lg px-2 py-1 focus:outline-none appearance-none disabled:opacity-50 max-w-[120px] truncate"
+              className="bg-white/[0.04] border border-white/10 text-[10px] text-white rounded-lg px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE] appearance-none disabled:opacity-50 max-w-[120px] truncate"
             >
               <option value="UNASSIGNED" className="bg-[#070B14]">Unassigned</option>
               {organizationMembers.map(m => (
@@ -116,8 +116,9 @@ export function KanbanCard({
               {canEdit && (
                 <button 
                   onClick={() => onEdit(task)}
-                  className="p-1.5 text-neutral-400 hover:text-[#22D3EE] hover:bg-[#22D3EE]/10 rounded-md transition-colors"
+                  className="p-1.5 text-neutral-400 hover:text-[#22D3EE] hover:bg-[#22D3EE]/10 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
                   title="Edit Task"
+                  aria-label={`Edit ${task.title}`}
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
@@ -125,8 +126,9 @@ export function KanbanCard({
               {canDelete && (
                 <button 
                   onClick={() => onDelete(task.id)}
-                  className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors"
+                  className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                   title="Delete Task"
+                  aria-label={`Delete ${task.title}`}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

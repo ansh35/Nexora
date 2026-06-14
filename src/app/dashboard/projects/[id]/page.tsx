@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import prisma from "@/lib/prisma"
 import { TaskDashboard } from "@/components/tasks/TaskDashboard"
 import { ActivityFeedPopover } from "@/components/activity/ActivityFeedPopover"
+import { ActiveUsers } from "@/components/activity/ActiveUsers"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
@@ -62,7 +63,8 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             </div>
           </div>
           <div className="flex items-center gap-4 self-end sm:self-auto">
-            <ActivityFeedPopover />
+            <ActiveUsers organizationId={session.user.organizationId} />
+            <ActivityFeedPopover organizationId={session.user.organizationId} />
           </div>
         </header>
 
@@ -78,6 +80,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             organizationMembers={members} 
             userRole={session.user.role} 
             currentUserId={session.user.id}
+            organizationId={session.user.organizationId}
           />
         </main>
       </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { getActivities } from "@/actions/activity"
 import { formatDistanceToNow, format } from "date-fns"
-import { Loader2, ChevronLeft, ChevronRight, Activity, Filter, Search } from "lucide-react"
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 
 type Activity = {
   id: string
@@ -37,6 +37,7 @@ export function ActivityTimeline() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchActivities(1)
   }, [])
 
@@ -85,6 +86,7 @@ export function ActivityTimeline() {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-sm font-medium text-white overflow-hidden border border-white/10">
                     {activity.user.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={activity.user.image} alt={activity.user.name} className="w-full h-full object-cover" />
                     ) : (
                       activity.user.name.charAt(0).toUpperCase()

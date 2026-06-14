@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react"
 import { Loader2, X } from "lucide-react"
 import { createTask, editTask } from "@/actions/tasks"
+import { TaskComments } from "./TaskComments"
 
 type Task = {
   id: string
@@ -17,9 +18,10 @@ type TaskModalProps = {
   onClose: () => void
   projectId: string
   taskToEdit?: Task | null
+  organizationId: string
 }
 
-export function TaskModal({ isOpen, onClose, projectId, taskToEdit }: TaskModalProps) {
+export function TaskModal({ isOpen, onClose, projectId, taskToEdit, organizationId }: TaskModalProps) {
   const [title, setTitle] = useState(taskToEdit?.title || "")
   const [description, setDescription] = useState(taskToEdit?.description || "")
   const [priority, setPriority] = useState(taskToEdit?.priority || "MEDIUM")
@@ -154,6 +156,11 @@ export function TaskModal({ isOpen, onClose, projectId, taskToEdit }: TaskModalP
             </button>
           </div>
         </form>
+        {taskToEdit && (
+          <div className="px-6 pb-6">
+            <TaskComments taskId={taskToEdit.id} organizationId={organizationId} />
+          </div>
+        )}
       </div>
     </div>
   )

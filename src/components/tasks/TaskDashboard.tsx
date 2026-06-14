@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import { Search, Plus, Trash2, Edit2, Loader2, ListTodo, Circle, CheckCircle2, Clock, LayoutList, Kanban } from "lucide-react"
 import { TaskModal } from "./TaskModal"
 import { deleteTask, updateTaskStatus, assignTask } from "@/actions/tasks"
 import { KanbanBoard } from "./KanbanBoard"
+import { usePusher } from "@/components/providers/PusherProvider"
 
 type User = {
   id: string
@@ -20,6 +21,7 @@ type Task = {
   priority: string
   assigneeId: string | null
   createdAt: Date
+  projectId?: string
 }
 
 type TaskDashboardProps = {
@@ -28,9 +30,11 @@ type TaskDashboardProps = {
   organizationMembers: User[]
   userRole: string
   currentUserId: string
+  isGlobal?: boolean
+  organizationId: string
 }
 
-export function TaskDashboard({ projectId, initialTasks, organizationMembers, userRole, currentUserId }: TaskDashboardProps) {
+export function TaskDashboard({ projectId, initialTasks, organizationMembers, userRole, currentUserId, isGlobal = false, organizationId }: TaskDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("ALL")
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban")
@@ -38,11 +42,41 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
   const [isPending, startTransition] = useTransition()
   
-  const canCreate = userRole === "OWNER" || userRole === "ADMIN"
+  const [liveTasks, setLiveTasks] = useState<Task[]>(initialTasks)
+  const { pusherClient } = usePusher()
+
+  useEffect(() => {
+    setLiveTasks(initialTasks)
+  }, [initialTasks])
+
+  useEffect(() => {
+    if (!pusherClient) return
+
+    const channel = pusherClient.subscribe(`private-org-${organizationId}`)
+
+    channel.bind("task-created", (newTask: Task) => {
+      if (projectId !== "GLOBAL" && newTask.projectId !== projectId) return
+      setLiveTasks((prev) => [newTask, ...prev])
+    })
+
+    channel.bind("task-updated", (updatedTask: Task) => {
+      setLiveTasks((prev) => prev.map(t => t.id === updatedTask.id ? updatedTask : t))
+    })
+
+    channel.bind("task-deleted", (data: { id: string }) => {
+      setLiveTasks((prev) => prev.filter(t => t.id !== data.id))
+    })
+
+    return () => {
+      pusherClient.unsubscribe(`private-org-${organizationId}`)
+    }
+  }, [pusherClient, organizationId, projectId])
+
+  const canCreate = !isGlobal && (userRole === "OWNER" || userRole === "ADMIN")
   const canEdit = userRole === "OWNER" || userRole === "ADMIN"
   const canDelete = userRole === "OWNER"
 
-  const filteredTasks = initialTasks.filter((t) => {
+  const filteredTasks = liveTasks.filter((t) => {
     const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase()))
     const matchesStatus = statusFilter === "ALL" || t.status === statusFilter
@@ -269,6 +303,7 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
         }} 
         projectId={projectId}
         taskToEdit={taskToEdit}
+        organizationId={organizationId}
       />
     </div>
   )

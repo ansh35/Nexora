@@ -65,5 +65,34 @@ After running `npm run seed`, you can use the following accounts to test multi-t
 - **ADMIN**: `admin@acme.com`
 - **MEMBER**: `member@acme.com`
 
+## 🤖 AI Configuration (Groq)
+
+Nexora leverages a **Groq-only** AI architecture to power its productivity features (Task Breakdown, Project Planner, Meeting Notes Parser, Task Summaries, Risk Detection, and Sprint Generator). The primary model used is `llama-3.3-70b-versatile`.
+
+1. **Environment Variables**:
+   You must set `GROQ_API_KEY` in your `.env` file to use AI features. *No OpenAI keys are required.*
+   ```env
+   GROQ_API_KEY="your_groq_api_key_here"
+   ```
+
+2. **AI Usage Limits**:
+   AI usage is strictly tracked per discrete request and limited by organization subscription plans:
+   - **Free Plan**: 100 AI requests per month.
+   - **Pro Plan**: 500 AI requests per month.
+   - **Enterprise Plan**: Unlimited AI requests.
+
+## 💳 Billing Configuration (Developer Mode)
+
+Due to Stripe onboarding limitations in India, the current Nexora billing implementation operates in **Developer Billing Mode**. 
+
+- **Payment Processing**: No real payments are processed.
+- **Upgrades/Downgrades**: Simulated via `DeveloperBillingProvider`. When upgrading, the subscription is activated instantly.
+- **Future Migration Strategy**: The architecture is fully abstracted within `src/services/billing`. To migrate back to Stripe, Razorpay, or PayPal in the future, developers only need to implement the `BillingProvider` interface (`checkout`, `portal`, `upgrade`, `downgrade`) without modifying feature gates or usage logic.
+- **Provider Abstraction Architecture**: 
+  - `provider.ts`: Contract.
+  - `developer-billing-provider.ts`: Current simulator.
+  - `subscription-service.ts`: Exposes active plan details.
+  - `usage-service.ts`: Tracks real-world limits against simulated quotas.
+
 ---
 *Developed as a foundation for the Nexora SaaS platform.*

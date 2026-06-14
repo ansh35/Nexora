@@ -39,7 +39,7 @@ export async function getActivities(page = 1, limit = 20) {
       currentPage: page
     }
   } catch (error) {
-    console.error("Failed to fetch activities:", error)
-    return { error: "Failed to fetch activities" }
+    console.error("Failed to get activities", error)
+    return { error: "Failed to load activities" }
   }
 }

@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/../auth"
 import { revalidatePath } from "next/cache"
 import { logActivity } from "@/lib/activity"
+import { pusherServer } from "@/lib/pusher"
 
 type TaskData = {
   title: string
@@ -40,7 +41,15 @@ export async function createTask(projectId: string, data: TaskData) {
       entityName: task.title
     })
 
+    await pusherServer.trigger(
+      `private-org-${session.user.organizationId}`,
+      "task-created",
+      task
+    )
+
     revalidatePath(`/dashboard/projects/${projectId}`)
+    revalidatePath("/dashboard/tasks")
+    revalidatePath("/dashboard/kanban")
     return { success: true, task }
   } catch (error) {
     console.error("Failed to create task:", error)
@@ -61,7 +70,7 @@ export async function editTask(id: string, data: TaskData) {
     })
     if (!task) return { error: "Task not found" }
 
-    await prisma.task.update({
+    const updatedTask = await prisma.task.update({
       where: { id },
       data: {
         title: data.title,
@@ -79,7 +88,15 @@ export async function editTask(id: string, data: TaskData) {
       entityName: task.title
     })
 
+    await pusherServer.trigger(
+      `private-org-${session.user.organizationId}`,
+      "task-updated",
+      updatedTask
+    )
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
+    revalidatePath("/dashboard/tasks")
+    revalidatePath("/dashboard/kanban")
     return { success: true }
   } catch (error) {
     console.error("Failed to edit task:", error)
@@ -107,7 +124,7 @@ export async function assignTask(id: string, assigneeId: string | null) {
       if (!assignee) return { error: "Invalid assignee" }
     }
 
-    await prisma.task.update({
+    const updatedTask = await prisma.task.update({
       where: { id },
       data: { assigneeId }
     })
@@ -121,7 +138,15 @@ export async function assignTask(id: string, assigneeId: string | null) {
       entityName: task.title
     })
 
+    await pusherServer.trigger(
+      `private-org-${session.user.organizationId}`,
+      "task-updated",
+      updatedTask
+    )
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
+    revalidatePath("/dashboard/tasks")
+    revalidatePath("/dashboard/kanban")
     return { success: true }
   } catch (error) {
     console.error("Failed to assign task:", error)
@@ -146,7 +171,7 @@ export async function updateTaskStatus(id: string, status: string) {
       }
     }
 
-    await prisma.task.update({
+    const updatedTask = await prisma.task.update({
       where: { id },
       data: { status }
     })
@@ -160,7 +185,15 @@ export async function updateTaskStatus(id: string, status: string) {
       entityName: task.title
     })
 
+    await pusherServer.trigger(
+      `private-org-${session.user.organizationId}`,
+      "task-updated",
+      updatedTask
+    )
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
+    revalidatePath("/dashboard/tasks")
+    revalidatePath("/dashboard/kanban")
     return { success: true }
   } catch (error) {
     console.error("Failed to update status:", error)
@@ -191,7 +224,15 @@ export async function deleteTask(id: string) {
       entityName: task.title
     })
 
+    await pusherServer.trigger(
+      `private-org-${session.user.organizationId}`,
+      "task-deleted",
+      { id }
+    )
+
     revalidatePath(`/dashboard/projects/${task.projectId}`)
+    revalidatePath("/dashboard/tasks")
+    revalidatePath("/dashboard/kanban")
     return { success: true }
   } catch (error) {
     console.error("Failed to delete task:", error)

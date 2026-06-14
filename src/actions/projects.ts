@@ -5,6 +5,8 @@ import { auth } from "@/../auth"
 import { revalidatePath } from "next/cache"
 import { logActivity } from "@/lib/activity"
 
+import { checkProjectLimit } from "@/services/billing/usage-service"
+
 export async function createProject(data: { name: string; description?: string }) {
   const session = await auth()
   
@@ -18,6 +20,11 @@ export async function createProject(data: { name: string; description?: string }
 
   if (!data.name || data.name.trim() === "") {
     return { error: "Project name is required" }
+  }
+
+  const canCreate = await checkProjectLimit(session.user.organizationId)
+  if (!canCreate) {
+    return { error: "Project limit reached. Please upgrade your plan to create more projects." }
   }
 
   try {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition, useEffect, Suspense } from "react"
-import { Search, Plus, Trash2, Mail, Shield, Clock, Copy, Check, MessageCircle, AlertCircle } from "lucide-react"
+import { Search, Plus, Trash2, Mail, Shield, Clock, Copy, Check, MessageCircle } from "lucide-react"
 import { InviteModal } from "./InviteModal"
 import { removeMember, updateRole, cancelInvitation } from "@/actions/team"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
@@ -51,13 +51,23 @@ function TeamDashboardContent({
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
   const [copiedToken, setCopiedToken] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
     if (searchParams.get("invite") === "true") {
       // eslint-disable-next-line
       setIsInviteModalOpen(true)
     }
   }, [searchParams])
+
+  if (!isMounted) {
+    return (
+      <div className="flex justify-center p-12">
+        <div className="w-8 h-8 rounded-full border-2 border-[#22D3EE] border-t-transparent animate-spin" />
+      </div>
+    )
+  }
 
   const closeInviteModal = () => {
     setIsInviteModalOpen(false)
@@ -123,6 +133,7 @@ function TeamDashboardContent({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex gap-4 border-b border-white/10 flex-1">
           <button
+            suppressHydrationWarning
             onClick={() => setActiveTab("members")}
             className={`pb-3 px-2 text-sm font-medium transition-colors border-b-2 ${
               activeTab === "members" ? "border-[#22D3EE] text-white" : "border-transparent text-neutral-500 hover:text-neutral-300"
@@ -132,6 +143,7 @@ function TeamDashboardContent({
           </button>
           {canInvite && (
             <button
+              suppressHydrationWarning
               onClick={() => setActiveTab("invites")}
               className={`pb-3 px-2 text-sm font-medium transition-colors border-b-2 flex items-center gap-2 ${
                 activeTab === "invites" ? "border-[#22D3EE] text-white" : "border-transparent text-neutral-500 hover:text-neutral-300"
@@ -147,6 +159,7 @@ function TeamDashboardContent({
 
         {canInvite && (
           <button
+            suppressHydrationWarning
             onClick={() => setIsInviteModalOpen(true)}
             className="bg-[#22D3EE] hover:bg-[#06B6D4] text-[#070B14] font-semibold py-2 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
           >
@@ -161,6 +174,7 @@ function TeamDashboardContent({
           <div className="relative max-w-md mb-6">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
             <input
+              suppressHydrationWarning
               type="text"
               placeholder="Search members..."
               value={searchQuery}
@@ -191,6 +205,7 @@ function TeamDashboardContent({
                   <div className="flex items-center gap-2">
                     <Shield className={`w-3.5 h-3.5 ${member.role === 'OWNER' ? 'text-red-400' : member.role === 'ADMIN' ? 'text-orange-400' : 'text-blue-400'}`} />
                     <select
+                      suppressHydrationWarning
                       value={member.role}
                       disabled={!canManageRolesAndRemove || member.id === currentUserId || isPending}
                       onChange={(e) => handleRoleChange(member.id, e.target.value)}
@@ -204,6 +219,7 @@ function TeamDashboardContent({
 
                   {canManageRolesAndRemove && member.id !== currentUserId && (
                     <button
+                      suppressHydrationWarning
                       onClick={() => handleRemove(member.id)}
                       disabled={isPending}
                       className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
@@ -248,6 +264,7 @@ function TeamDashboardContent({
 
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     <button
+                      suppressHydrationWarning
                       onClick={() => shareWhatsApp(invite.token, invite.role)}
                       className="flex items-center gap-2 px-3 py-1.5 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] text-xs rounded-lg transition-colors"
                       title="Share via WhatsApp"
@@ -256,6 +273,7 @@ function TeamDashboardContent({
                       Share
                     </button>
                     <button
+                      suppressHydrationWarning
                       onClick={() => copyToClipboard(invite.token)}
                       className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white text-xs rounded-lg transition-colors"
                     >
@@ -263,6 +281,7 @@ function TeamDashboardContent({
                       {copiedToken === invite.token ? "Copied" : "Copy Link"}
                     </button>
                     <button
+                      suppressHydrationWarning
                       onClick={() => handleCancelInvite(invite.id)}
                       disabled={isPending}
                       className="px-3 py-1.5 text-red-400 hover:bg-red-400/10 text-xs rounded-lg transition-colors"

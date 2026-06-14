@@ -11,6 +11,8 @@ type Project = {
   description: string | null
   status: string
   createdAt: Date
+  tasks?: { status: string }[]
+  owner?: { name: string, image: string | null } | null
 }
 
 type ProjectDashboardProps = {
@@ -63,62 +65,108 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
     setIsModalOpen(true)
   }
 
-  const ProjectCard = ({ project }: { project: Project }) => (
-    <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl group hover:bg-white/[0.08] transition-colors flex flex-col h-full">
-      <div className="flex-1">
-        <div className="flex items-start justify-between mb-2">
-          <Link href={`/dashboard/projects/${project.id}`}>
-            <h3 className="text-xl font-semibold text-white group-hover:text-[#22D3EE] transition-colors cursor-pointer">
-              {project.name}
-            </h3>
-          </Link>
-          {project.status === "ARCHIVED" && (
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-neutral-500/20 text-neutral-400 rounded-full">
-              Archived
+  const ProjectCard = ({ project }: { project: Project }) => {
+    const totalTasks = project.tasks?.length || 0
+    const completedTasks = project.tasks?.filter(t => t.status === "DONE").length || 0
+    const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100)
+
+    return (
+      <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl group hover:bg-white/[0.08] transition-colors flex flex-col h-full relative overflow-hidden">
+        {/* Glow effect on hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#22D3EE]/5 to-transparent" />
+        </div>
+
+        <div className="flex-1 relative z-10">
+          <div className="flex items-start justify-between mb-2">
+            <Link href={`/dashboard/projects/${project.id}`}>
+              <h3 className="text-xl font-semibold text-white group-hover:text-[#22D3EE] transition-colors cursor-pointer">
+                {project.name}
+              </h3>
+            </Link>
+            {project.status === "ARCHIVED" && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-neutral-500/20 text-neutral-400 rounded-full">
+                Archived
+              </span>
+            )}
+            {project.status === "ACTIVE" && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 rounded-full">
+                Active
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-neutral-400 line-clamp-2 mb-6">
+            {project.description || "No description provided."}
+          </p>
+
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-xs text-neutral-400 mb-2">
+              <span>Progress</span>
+              <span className="text-white font-medium">{progress}%</span>
+            </div>
+            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-[#22D3EE] to-[#06B6D4] transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto relative z-10">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-medium text-white overflow-hidden border border-white/5" title={`Owner: ${project.owner?.name || "Organization"}`}>
+              {project.owner?.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={project.owner.image} alt={project.owner.name} className="w-full h-full object-cover" />
+              ) : (
+                (project.owner?.name || "O").charAt(0).toUpperCase()
+              )}
+            </div>
+            <span className="text-xs text-neutral-500" suppressHydrationWarning>
+              {new Date(project.createdAt).toLocaleDateString()}
             </span>
-          )}
-        </div>
-        <p className="text-sm text-neutral-400 line-clamp-3 mb-4">
-          {project.description || "No description provided."}
-        </p>
-      </div>
-      
-      <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
-        <span className="text-xs text-neutral-500" suppressHydrationWarning>
-          Created {new Date(project.createdAt).toLocaleDateString()}
-        </span>
-        <div className="flex items-center gap-2">
-          {canEdit && project.status === "ACTIVE" && (
-            <>
+          </div>
+          <div className="flex items-center gap-1">
+            {canEdit && project.status === "ACTIVE" && (
+              <>
+                <button 
+                  suppressHydrationWarning
+                  onClick={() => openEditModal(project)}
+                  className="p-2 text-neutral-400 hover:text-[#22D3EE] hover:bg-[#22D3EE]/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE]"
+                  title="Edit Project"
+                  aria-label={`Edit ${project.name}`}
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button 
+                  suppressHydrationWarning
+                  onClick={() => handleArchive(project.id)}
+                  className="p-2 text-neutral-400 hover:text-orange-400 hover:bg-orange-400/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                  title="Archive Project"
+                  aria-label={`Archive ${project.name}`}
+                >
+                  <Archive className="w-4 h-4" />
+                </button>
+              </>
+            )}
+            {canDelete && (
               <button 
-                onClick={() => openEditModal(project)}
-                className="p-2 text-neutral-400 hover:text-[#22D3EE] hover:bg-[#22D3EE]/10 rounded-lg transition-colors"
-                title="Edit Project"
+                suppressHydrationWarning
+                onClick={() => handleDelete(project.id)}
+                className="p-2 text-neutral-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                title="Delete Project"
+                aria-label={`Delete ${project.name}`}
               >
-                <Edit2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" />
               </button>
-              <button 
-                onClick={() => handleArchive(project.id)}
-                className="p-2 text-neutral-400 hover:text-orange-400 hover:bg-orange-400/10 rounded-lg transition-colors"
-                title="Archive Project"
-              >
-                <Archive className="w-4 h-4" />
-              </button>
-            </>
-          )}
-          {canDelete && (
-            <button 
-              onClick={() => handleDelete(project.id)}
-              className="p-2 text-neutral-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-              title="Delete Project"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -128,6 +176,7 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
             <Search className="h-5 w-5 text-neutral-500" />
           </div>
           <input
+            suppressHydrationWarning
             ref={searchInputRef}
             type="text"
             placeholder="Search projects..."
@@ -140,8 +189,10 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
         
         {canCreate && (
           <button
+            suppressHydrationWarning
             onClick={openCreateModal}
-            className="bg-[#22D3EE] hover:bg-[#06B6D4] text-[#070B14] font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+            className="bg-[#22D3EE] hover:bg-[#06B6D4] text-[#070B14] font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#070B14] focus-visible:ring-[#22D3EE]"
+            aria-label="Create New Project"
           >
             <Plus className="w-5 h-5" />
             New Project

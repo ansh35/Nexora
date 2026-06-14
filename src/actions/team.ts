@@ -7,6 +7,8 @@ import crypto from "crypto"
 import { sendInvitationEmail } from "@/lib/email/service"
 import { logActivity } from "@/lib/activity"
 
+import { checkUserLimit } from "@/services/billing/usage-service"
+
 export async function inviteMember(email: string, role: string) {
   const session = await auth()
   
@@ -16,6 +18,11 @@ export async function inviteMember(email: string, role: string) {
   // Admin cannot invite Owners
   if (session.user.role === "ADMIN" && role === "OWNER") {
     return { error: "Forbidden: Admins cannot invite Owners" }
+  }
+
+  const canInvite = await checkUserLimit(session.user.organizationId)
+  if (!canInvite) {
+    return { error: "User limit reached. Please upgrade your plan to invite more members." }
   }
 
   try {
