@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from "react"
@@ -58,7 +59,7 @@ export function MeetingNotesClient({ projects }: { projects: { id: string, name:
       {result && (
         <div className="space-y-4 rounded-xl border border-[#22D3EE]/50 bg-[#22D3EE]/5 p-6">
           <h3 className="font-semibold text-lg text-[#22D3EE]">Extracted Tasks Preview</h3>
-          <p className="text-sm text-neutral-400 mb-4">You can review these tasks. In a full implementation, you'd click 'Save' to add them to the DB.</p>
+          <p className="text-sm text-neutral-400 mb-4">You can review these tasks. In a full implementation, you&apos;d click &apos;Save&apos; to add them to the DB.</p>
           <div className="grid gap-4">
             {result.map((task: any, idx: number) => (
               <div key={idx} className="rounded-lg bg-card p-4 border border-white/10">

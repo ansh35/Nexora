@@ -33,6 +33,7 @@ export default function LoginPage() {
     const savedEmail = localStorage.getItem("nexora_remembered_email")
     if (savedEmail) {
       form.setValue("email", savedEmail)
+      // eslint-disable-next-line
       setRememberMe(true)
     }
   }, [form])

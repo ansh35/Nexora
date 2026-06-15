@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { Loader2, X } from "lucide-react"
+import { X } from "lucide-react"
 import { createTask, editTask } from "@/actions/tasks"
 import { TaskComments } from "./TaskComments"
 import { ModalMotion } from "@/components/motion/modal-motion"

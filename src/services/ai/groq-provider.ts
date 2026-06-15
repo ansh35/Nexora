@@ -27,9 +27,9 @@ ${schemaDescription}`
       if (!content) throw new Error("Empty response from Groq")
 
       return JSON.parse(content) as T
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Groq generation failed:", error)
-      throw new Error(`AI Generation failed: ${error.message}`)
+      throw new Error(`AI Generation failed: ${error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)}`)
     }
   }
 }

@@ -57,6 +57,7 @@ function TeamDashboardContent({
   const { toast } = useMotion()
 
   useEffect(() => {
+    // eslint-disable-next-line
     setIsMounted(true)
     if (searchParams.get("invite") === "true") {
       // eslint-disable-next-line

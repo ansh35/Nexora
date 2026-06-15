@@ -17,7 +17,7 @@ export default async function RiskDetectionPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Risk Detection</h2>
       </div>
-      <p className="text-neutral-400">Analyze a project's tasks to identify and mitigate potential risks.</p>
+      <p className="text-neutral-400">Enter your project&apos;s current context, timeline, and key dependencies to identify potential risks.</p>
       <RiskDetectionClient projects={projects} />
     </div>
   )

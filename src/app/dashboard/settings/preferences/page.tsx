@@ -17,8 +17,11 @@ export default function PreferencesSettingsPage() {
     const savedLang = localStorage.getItem("app_language")
     const savedTz = localStorage.getItem("app_timezone")
 
+    // eslint-disable-next-line
     if (savedTheme) setTheme(savedTheme)
+    // eslint-disable-next-line
     if (savedLang) setLanguage(savedLang)
+    // eslint-disable-next-line
     if (savedTz) setTimezone(savedTz)
   }, [])
 

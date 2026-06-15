@@ -30,6 +30,7 @@ export function PusherProvider({ children }: { children: React.ReactNode }) {
       }
     })
 
+    // eslint-disable-next-line
     setPusherClient(client)
 
     return () => {

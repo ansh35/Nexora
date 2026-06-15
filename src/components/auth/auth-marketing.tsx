@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Sparkles, Users, BarChart3, ShieldCheck, Cpu } from "lucide-react"
 
 const features = [

@@ -102,7 +102,7 @@ export function KanbanBoard({
       setTasks(initialTasks) 
       toast({
         title: "Update Failed",
-        description: `Failed to update task: ${error.message}`,
+        description: `Failed to update task: ${(error instanceof Error ? error.message : String(error))}`,
         type: "error"
       })
     }

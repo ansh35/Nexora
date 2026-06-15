@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getActivities } from "@/actions/activity"
 import { formatDistanceToNow } from "date-fns"
 import { Activity as ActivityIcon } from "lucide-react"

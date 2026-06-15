@@ -19,9 +19,9 @@ export async function getNotifications() {
     })
 
     return { notifications, unreadCount }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching notifications:", error)
-    return { error: error.message || "Failed to fetch notifications" }
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to fetch notifications" }
   }
 }
 
@@ -36,8 +36,8 @@ export async function markAsRead(id: string) {
     })
     revalidatePath("/dashboard/notifications")
     return { success: true }
-  } catch (error: any) {
-    return { error: error.message || "Failed to mark as read" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to mark as read" }
   }
 }
 
@@ -52,7 +52,7 @@ export async function markAllAsRead() {
     })
     revalidatePath("/dashboard/notifications")
     return { success: true }
-  } catch (error: any) {
-    return { error: error.message || "Failed to mark all as read" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to mark all as read" }
   }
 }

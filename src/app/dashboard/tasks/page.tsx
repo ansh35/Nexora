@@ -23,7 +23,7 @@ export default async function GlobalTasksPage() {
     <div className="p-8 max-w-6xl mx-auto w-full font-sans animate-in fade-in duration-500">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white tracking-tight">Global Tasks</h1>
-        <p className="text-neutral-400 mt-1">Global view of all tasks across your organization's projects.</p>
+        <p className="text-neutral-400 mt-1">Global view of all tasks across your organization&apos;s projects.</p>
       </header>
       
       <div className="mt-8">

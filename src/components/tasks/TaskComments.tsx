@@ -74,15 +74,17 @@ export function TaskComments({ taskId, organizationId }: { taskId: string, organ
     }
   }, [comments, typingUsers])
 
-  let typingTimeout: NodeJS.Timeout
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewContent(e.target.value)
     
     // Trigger typing event
     triggerTyping(taskId, true)
     
-    clearTimeout(typingTimeout)
-    typingTimeout = setTimeout(() => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current)
+    }
+    typingTimeoutRef.current = setTimeout(() => {
       triggerTyping(taskId, false)
     }, 2000)
   }

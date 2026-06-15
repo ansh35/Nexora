@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition, useEffect } from "react"
-import { Search, Plus, Trash2, Edit2, Loader2, ListTodo, Circle, CheckCircle2, Clock, LayoutList, Kanban } from "lucide-react"
+import { Search, Plus, Trash2, Edit2, Circle, CheckCircle2, Clock, LayoutList, Kanban } from "lucide-react"
 import { TaskModal } from "./TaskModal"
 import { deleteTask, updateTaskStatus, assignTask } from "@/actions/tasks"
 import { KanbanBoard } from "./KanbanBoard"
@@ -45,13 +45,15 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
   const [isPending, startTransition] = useTransition()
   
-  const [liveTasks, setLiveTasks] = useState<Task[]>(initialTasks)
   const { pusherClient } = usePusher()
   const { toast } = useMotion()
+  const [liveTasks, setLiveTasks] = useState<Task[]>(initialTasks)
+  const [prevInitialTasks, setPrevInitialTasks] = useState<Task[]>(initialTasks)
 
-  useEffect(() => {
+  if (initialTasks !== prevInitialTasks) {
+    setPrevInitialTasks(initialTasks)
     setLiveTasks(initialTasks)
-  }, [initialTasks])
+  }
 
   useEffect(() => {
     if (!pusherClient) return

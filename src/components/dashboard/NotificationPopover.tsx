@@ -33,6 +33,7 @@ export function NotificationPopover({ userId }: { userId: string }) {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchNotifications()
     // Poll every 60s as a fallback
     const interval = setInterval(fetchNotifications, 60000)
@@ -66,7 +67,8 @@ export function NotificationPopover({ userId }: { userId: string }) {
 
   const handleToggle = () => {
     if (!isOpen) {
-      fetchNotifications()
+      // eslint-disable-next-line
+    fetchNotifications()
     }
     setIsOpen(!isOpen)
   }

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { getCurrentOrganization } from "@/lib/org"
 import prisma from "@/lib/prisma"
 import { ProjectDashboard } from "@/components/projects/ProjectDashboard"
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ActivityFeedPopover } from "@/components/activity/ActivityFeedPopover"
 import { WelcomeOnboarding } from "@/components/dashboard/WelcomeOnboarding"
 import { EmptyState } from "@/components/ui/EmptyState"

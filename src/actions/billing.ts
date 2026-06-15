@@ -15,8 +15,8 @@ export async function simulateUpgrade(planId: string) {
     const orgId = await verifyOwner()
     await billingProvider.upgrade(orgId, planId)
     return { success: true }
-  } catch (error: any) {
-    return { error: error.message }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) }
   }
 }
 
@@ -25,7 +25,7 @@ export async function simulateDowngrade(planId: string) {
     const orgId = await verifyOwner()
     await billingProvider.downgrade(orgId, planId)
     return { success: true }
-  } catch (error: any) {
-    return { error: error.message }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) }
   }
 }

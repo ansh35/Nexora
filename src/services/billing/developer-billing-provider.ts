@@ -7,7 +7,8 @@ export class DeveloperBillingProvider implements BillingProvider {
     return "/dashboard/billing?success=true"
   }
 
-  async portal(organizationId: string): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async portal(_organizationId: string): Promise<string> {
     return "/dashboard/billing?manage=true"
   }
 

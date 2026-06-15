@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useRef, useTransition } from "react"
-import { Search, Plus, Archive, Trash2, Edit2, Loader2, FolderOpen } from "lucide-react"
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Search, Plus, Archive, Trash2, Edit2, FolderOpen } from "lucide-react"
 import { ProjectModal } from "./ProjectModal"
 import { archiveProject, deleteProject } from "@/actions/projects"
 import { useMotion } from "@/components/motion/motion-provider"

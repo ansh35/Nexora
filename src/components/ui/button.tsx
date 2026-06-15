@@ -39,6 +39,8 @@ const buttonVariants = cva(
   }
 )
 
+const MotionSlot = motion.create ? motion.create(Slot.Root) : motion(Slot.Root);
+
 function Button({
   className,
   variant = "default",
@@ -49,7 +51,6 @@ function Button({
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
   }) {
-  const MotionSlot = motion.create ? motion.create(Slot.Root) : motion(Slot.Root)
   const Comp = asChild ? MotionSlot : motion.button
 
   return (
@@ -61,6 +62,7 @@ function Button({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.12 }}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {...(props as any)}
     />
   )

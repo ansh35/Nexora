@@ -21,7 +21,7 @@ export default async function ProjectsPage() {
     <div className="p-8 max-w-6xl mx-auto w-full font-sans animate-in fade-in duration-500">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white tracking-tight">All Projects</h1>
-        <p className="text-neutral-400 mt-1">Manage and organize all your team's projects.</p>
+        <p className="text-neutral-400 mt-1">Manage and organize all your team&apos;s projects.</p>
       </header>
 
       {projects.length === 0 ? (
@@ -29,7 +29,7 @@ export default async function ProjectsPage() {
           <EmptyState 
             icon={FolderPlus}
             title="No projects yet"
-            description="Get started by creating your first project. Projects help you organize tasks and collaborate with your team."
+            description="You don&apos;t have any projects yet. Create your first project to get started."
           />
           <div className="mt-8">
             <ProjectDashboard initialProjects={projects} userRole={session.user.role} />

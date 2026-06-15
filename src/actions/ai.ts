@@ -35,8 +35,8 @@ export async function generateTaskBreakdown(taskId: string) {
     await incrementAiUsage(organizationId, userId, "task_breakdown")
     
     return { success: true, data: result.subtasks }
-  } catch (error: any) {
-    return { error: error.message || "Failed to generate task breakdown" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate task breakdown" }
   }
 }
 
@@ -48,8 +48,8 @@ export async function generateProjectPlan(name: string, description: string) {
     await incrementAiUsage(organizationId, userId, "project_plan")
     
     return { success: true, data: result.phases }
-  } catch (error: any) {
-    return { error: error.message || "Failed to generate project plan" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate project plan" }
   }
 }
 
@@ -66,8 +66,8 @@ export async function parseMeetingNotes(projectId: string, notes: string) {
     await incrementAiUsage(organizationId, userId, "meeting_parser")
     
     return { success: true, data: result.tasks }
-  } catch (error: any) {
-    return { error: error.message || "Failed to parse meeting notes" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to parse meeting notes" }
   }
 }
 
@@ -84,8 +84,8 @@ export async function generateTaskSummaries(projectId: string) {
     await incrementAiUsage(organizationId, userId, "task_summaries")
     
     return { success: true, data: result }
-  } catch (error: any) {
-    return { error: error.message || "Failed to generate summary" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate summary" }
   }
 }
 
@@ -102,8 +102,8 @@ export async function detectProjectRisks(projectId: string) {
     await incrementAiUsage(organizationId, userId, "risk_detection")
     
     return { success: true, data: result.risks }
-  } catch (error: any) {
-    return { error: error.message || "Failed to detect risks" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to detect risks" }
   }
 }
 
@@ -122,8 +122,8 @@ export async function generateSprint(projectId: string, focusArea: string) {
     const selectedTasks = tasks.filter(t => result.selectedTaskIds.includes(t.id))
     
     return { success: true, data: { sprintGoal: result.sprintGoal, tasks: selectedTasks } }
-  } catch (error: any) {
-    return { error: error.message || "Failed to generate sprint" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate sprint" }
   }
 }
 
@@ -135,8 +135,8 @@ export async function enhanceTitle(currentTitle: string, context: string) {
     await incrementAiUsage(organizationId, userId, "writing_assistant")
     
     return { success: true, data: result.title }
-  } catch (error: any) {
-    return { error: error.message || "Failed to enhance title" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to enhance title" }
   }
 }
 
@@ -148,7 +148,7 @@ export async function generateDescription(title: string, context: string) {
     await incrementAiUsage(organizationId, userId, "writing_assistant")
     
     return { success: true, data: result.description }
-  } catch (error: any) {
-    return { error: error.message || "Failed to generate description" }
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate description" }
   }
 }

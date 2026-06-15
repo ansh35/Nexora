@@ -2,7 +2,7 @@
 // Force cache refresh
 
 import { useState, useTransition } from "react"
-import { Loader2, X, Copy, Check, MessageCircle, AlertCircle } from "lucide-react"
+import { X, Copy, Check, MessageCircle, AlertCircle } from "lucide-react"
 import { inviteMember } from "@/actions/team"
 import { DrawerMotion } from "@/components/motion/drawer-motion"
 import { useMotion } from "@/components/motion/motion-provider"
