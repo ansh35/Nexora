@@ -21,7 +21,7 @@ export default function SettingsLayout({
   return (
     <div className="min-h-screen bg-[#070B14] p-8 text-white font-sans w-full">
       <div className="max-w-4xl mx-auto space-y-8">
-        <header className="relative z-50 flex items-center justify-between bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
+        <header className="relative z-50 flex items-center justify-between bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard"
@@ -48,7 +48,7 @@ export default function SettingsLayout({
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                       isActive 
                         ? "bg-white/10 text-white" 
-                        : "text-neutral-400 hover:text-white hover:bg-white/5"
+                        : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
                     }`}
                   >
                     {tab.name}
@@ -67,7 +67,7 @@ export default function SettingsLayout({
           </div>
 
           <div className="md:col-span-2 space-y-6">
-            <div className="bg-white/[0.04] border border-white/10 rounded-[24px] p-6 backdrop-blur-xl space-y-6">
+            <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300 space-y-6">
               {children}
             </div>
           </div>

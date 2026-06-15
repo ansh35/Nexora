@@ -36,7 +36,7 @@ export default async function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-[#070B14] p-8 text-white font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
-        <header className="relative z-50 flex items-center justify-between bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
+        <header className="relative z-50 flex items-center justify-between bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard"

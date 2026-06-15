@@ -6,6 +6,9 @@ import { TaskModal } from "./TaskModal"
 import { deleteTask, updateTaskStatus, assignTask } from "@/actions/tasks"
 import { KanbanBoard } from "./KanbanBoard"
 import { usePusher } from "@/components/providers/PusherProvider"
+import { useMotion } from "@/components/motion/motion-provider"
+import { EmptyState } from "@/components/feedback/empty-state"
+import { SkeletonGrid } from "@/components/feedback/skeleton-loader"
 
 type User = {
   id: string
@@ -44,6 +47,7 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
   
   const [liveTasks, setLiveTasks] = useState<Task[]>(initialTasks)
   const { pusherClient } = usePusher()
+  const { toast } = useMotion()
 
   useEffect(() => {
     setLiveTasks(initialTasks)
@@ -56,7 +60,10 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
 
     channel.bind("task-created", (newTask: Task) => {
       if (projectId !== "GLOBAL" && newTask.projectId !== projectId) return
-      setLiveTasks((prev) => [newTask, ...prev])
+      setLiveTasks((prev) => {
+        if (prev.some(t => t.id === newTask.id)) return prev
+        return [newTask, ...prev]
+      })
     })
 
     channel.bind("task-updated", (updatedTask: Task) => {
@@ -87,6 +94,11 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
     if (confirm("Delete this task?")) {
       startTransition(async () => {
         await deleteTask(id)
+        toast({
+          title: "Task Deleted",
+          description: "Task has been removed successfully.",
+          type: "success"
+        })
       })
     }
   }
@@ -94,12 +106,22 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
   const handleStatusChange = (taskId: string, status: string) => {
     startTransition(async () => {
       await updateTaskStatus(taskId, status)
+      toast({
+        title: "Status Updated",
+        description: "Task status has been updated.",
+        type: "success"
+      })
     })
   }
 
   const handleAssign = (taskId: string, assigneeId: string) => {
     startTransition(async () => {
       await assignTask(taskId, assigneeId === "UNASSIGNED" ? null : assigneeId)
+      toast({
+        title: "Assignee Updated",
+        description: "Task assignment has been updated.",
+        type: "success"
+      })
     })
   }
 
@@ -117,7 +139,7 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
     const canUpdateStatus = canEdit || task.assigneeId === currentUserId
 
     return (
-      <div className="bg-white/[0.05] border border-white/10 p-5 rounded-[20px] backdrop-blur-xl group hover:bg-white/[0.08] transition-colors flex flex-col h-full">
+      <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-5 rounded-[24px] backdrop-blur-xl group   transition-all duration-300 flex flex-col h-full">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
             {task.status === "TODO" && <Circle className="w-5 h-5 text-neutral-500" />}
@@ -147,7 +169,7 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
               disabled={!canUpdateStatus || isPending}
               value={task.status}
               onChange={(e) => handleStatusChange(task.id, e.target.value)}
-              className="bg-white/[0.04] border border-white/10 text-xs text-white rounded-lg px-2 py-1 focus:outline-none appearance-none disabled:opacity-50"
+              className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] text-xs text-white rounded-xl px-2 py-1 focus:outline-none appearance-none disabled:opacity-50"
             >
               <option value="TODO" className="bg-[#070B14]">To Do</option>
               <option value="IN_PROGRESS" className="bg-[#070B14]">In Progress</option>
@@ -158,7 +180,7 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
               disabled={!canEdit || isPending}
               value={task.assigneeId || "UNASSIGNED"}
               onChange={(e) => handleAssign(task.id, e.target.value)}
-              className="bg-white/[0.04] border border-white/10 text-xs text-white rounded-lg px-2 py-1 focus:outline-none appearance-none disabled:opacity-50 max-w-[120px] truncate"
+              className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] text-xs text-white rounded-xl px-2 py-1 focus:outline-none appearance-none disabled:opacity-50 max-w-[120px] truncate"
             >
               <option value="UNASSIGNED" className="bg-[#070B14]">Unassigned</option>
               {organizationMembers.map(m => (
@@ -258,10 +280,9 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
         )}
       </div>
 
-      {isPending && (
-        <div className="flex items-center text-[#22D3EE] text-sm">
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          Updating...
+      {isPending && viewMode === "list" && (
+        <div className="mb-6">
+          <SkeletonGrid count={3} />
         </div>
       )}
 
@@ -281,17 +302,15 @@ export function TaskDashboard({ projectId, initialTasks, organizationMembers, us
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTasks.map(t => <TaskCard key={t.id} task={t} />)}
             </div>
-          ) : (
-            <div className="bg-white/[0.02] border border-white/5 rounded-[24px] p-12 flex flex-col items-center justify-center text-center">
-              <ListTodo className="w-10 h-10 text-neutral-600 mb-4" />
-              <h3 className="text-lg font-medium text-neutral-300 mb-1">No tasks found</h3>
-              <p className="text-sm text-neutral-500 max-w-sm">
-                {searchQuery || statusFilter !== "ALL" 
-                  ? "No tasks match your filters." 
-                  : "This project has no tasks yet."}
-              </p>
-            </div>
-          )}
+          ) : !isPending ? (
+            <EmptyState
+              icon="search"
+              title="No tasks found"
+              description={searchQuery || statusFilter !== "ALL" 
+                ? "No tasks match your filters." 
+                : "This project has no tasks yet."}
+            />
+          ) : null}
         </>
       )}
 

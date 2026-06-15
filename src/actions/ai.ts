@@ -10,6 +10,7 @@ import { executeMeetingParser } from "@/services/ai/meeting-parser"
 import { executeSummarizer } from "@/services/ai/summarizer"
 import { executeRiskAnalysis } from "@/services/ai/risk-analysis"
 import { executeSprintGenerator } from "@/services/ai/sprint-generator"
+import { executeTitleEnhancement, executeDescriptionGeneration } from "@/services/ai/writing-assistant"
 
 async function verifyAccessAndQuota() {
   const session = await auth()
@@ -123,5 +124,31 @@ export async function generateSprint(projectId: string, focusArea: string) {
     return { success: true, data: { sprintGoal: result.sprintGoal, tasks: selectedTasks } }
   } catch (error: any) {
     return { error: error.message || "Failed to generate sprint" }
+  }
+}
+
+export async function enhanceTitle(currentTitle: string, context: string) {
+  try {
+    const { organizationId, userId } = await verifyAccessAndQuota()
+    
+    const result = await executeTitleEnhancement(currentTitle, context)
+    await incrementAiUsage(organizationId, userId, "writing_assistant")
+    
+    return { success: true, data: result.title }
+  } catch (error: any) {
+    return { error: error.message || "Failed to enhance title" }
+  }
+}
+
+export async function generateDescription(title: string, context: string) {
+  try {
+    const { organizationId, userId } = await verifyAccessAndQuota()
+    
+    const result = await executeDescriptionGeneration(title, context)
+    await incrementAiUsage(organizationId, userId, "writing_assistant")
+    
+    return { success: true, data: result.description }
+  } catch (error: any) {
+    return { error: error.message || "Failed to generate description" }
   }
 }

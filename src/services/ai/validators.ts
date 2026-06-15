@@ -48,5 +48,13 @@ export const schemas = {
   {
     "sprintGoal": "One sentence describing the goal of this sprint",
     "selectedTaskIds": ["id1", "id2"]
+  }`,
+  titleEnhancement: `
+  {
+    "title": "A concise, professional, actionable title under 12 words"
+  }`,
+  descriptionGeneration: `
+  {
+    "description": "A clear, concise, enterprise-appropriate description"
   }`
 }

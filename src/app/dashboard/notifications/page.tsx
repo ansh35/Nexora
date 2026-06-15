@@ -37,7 +37,7 @@ export default async function NotificationsPage() {
           }}>
             <button 
               type="submit"
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-colors text-sm font-medium border border-white/10"
+              className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] hover:bg-white/10 text-white rounded-xl transition-colors text-sm font-medium border border-white/10"
             >
               <CheckCircle2 className="w-4 h-4" />
               Mark all as read
@@ -64,7 +64,7 @@ export default async function NotificationsPage() {
               }`}
             >
               <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                notification.read ? "bg-white/5" : "bg-[#22D3EE]/10"
+                notification.read ? "bg-white/[0.05]" : "bg-[#22D3EE]/10"
               }`}>
                 <Bell className={`w-5 h-5 ${notification.read ? "text-neutral-500" : "text-[#22D3EE]"}`} />
               </div>

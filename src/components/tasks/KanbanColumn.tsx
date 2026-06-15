@@ -50,11 +50,11 @@ export function KanbanColumn({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`flex flex-col bg-white/[0.02] border rounded-[24px] overflow-hidden backdrop-blur-xl h-full transition-colors ${
-        isOver ? "border-[#22D3EE]/50 bg-white/[0.04]" : "border-white/5"
+      className={`flex flex-col bg-white/[0.02] border rounded-[24px] overflow-hidden backdrop-blur-xl h-full transition-all duration-300 ${
+        isOver ? "border-[#22D3EE]/50 bg-white/[0.05] shadow-[0_0_40px_rgba(34,211,238,0.12)]" : "border-white/[0.08]"
       }`}
     >
-      <div className="p-4 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
+      <div className="p-4 border-b border-white/[0.08] bg-white/[0.02] flex items-center justify-between">
         <h2 className="font-semibold text-white tracking-wide">{title}</h2>
         <span className="text-xs font-medium text-neutral-400 bg-white/[0.05] px-2 py-1 rounded-full">
           {tasks.length}
@@ -89,7 +89,7 @@ export function KanbanColumn({
         </SortableContext>
         
         {tasks.length === 0 && (
-          <div className="h-full flex items-center justify-center text-sm text-neutral-500 py-8 border-2 border-dashed border-white/10 rounded-2xl">
+          <div className="h-full flex items-center justify-center text-sm text-neutral-500 py-8 border-2 border-dashed border-white/[0.08] rounded-[24px]">
             Drop tasks here
           </div>
         )}

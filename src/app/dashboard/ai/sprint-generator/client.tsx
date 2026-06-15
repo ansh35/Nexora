@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { generateSprint } from "@/actions/ai"
 import { Button } from "@/components/ui/button"
+import { AIFadeUpContainer } from "@/components/motion/ai-motion"
 
 export function SprintGeneratorClient({ projects }: { projects: { id: string, name: string }[] }) {
   const [projectId, setProjectId] = useState(projects[0]?.id || "")
@@ -59,14 +60,14 @@ export function SprintGeneratorClient({ projects }: { projects: { id: string, na
         <div className="space-y-4 rounded-xl border border-[#22D3EE]/50 bg-[#22D3EE]/5 p-6">
           <h3 className="font-semibold text-lg text-[#22D3EE]">Proposed Sprint</h3>
           <p className="text-white/90 mb-4"><strong className="text-[#22D3EE]">Goal:</strong> {result.sprintGoal}</p>
-          <div className="grid gap-4">
+          <AIFadeUpContainer className="grid gap-4">
             {result.tasks.map((task: any, idx: number) => (
               <div key={idx} className="rounded-lg bg-card p-4 border border-white/10 flex items-center justify-between">
                 <h4 className="font-medium text-white">{task.title}</h4>
                 <span className="text-xs px-2 py-1 bg-white/10 rounded-md font-medium">{task.priority}</span>
               </div>
             ))}
-          </div>
+          </AIFadeUpContainer>
         </div>
       )}
     </div>

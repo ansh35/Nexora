@@ -7,6 +7,7 @@ import * as z from "zod"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { motion } from "framer-motion"
 
 import { resetPassword } from "@/actions/auth"
 
@@ -113,7 +114,7 @@ function ResetPasswordForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full bg-[#22D3EE] hover:bg-[#06B6D4] text-[#070B14] font-semibold py-3 rounded-xl transition-colors flex items-center justify-center"
+        className="w-full bg-[#22D3EE] hover:bg-[#06B6D4] hover:scale-[1.02] text-[#070B14] font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.25)] mt-4"
       >
         {isPending ? (
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -127,28 +128,31 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen bg-[#070B14] flex flex-col items-center justify-center p-4 sm:p-8 font-sans text-white">
-      <div className="w-full max-w-md bg-white/[0.05] border border-white/10 p-8 rounded-[24px] backdrop-blur-xl shadow-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">
-            Reset Password
-          </h1>
-          <p className="text-sm text-neutral-400">
-            Enter your new password below
-          </p>
-        </div>
-
-        <Suspense fallback={<div className="flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#22D3EE]" /></div>}>
-          <ResetPasswordForm />
-        </Suspense>
-        
-        <div className="mt-8 text-center text-sm text-neutral-400">
-          Remember your password?{" "}
-          <Link href="/login" className="text-[#22D3EE] hover:text-[#06B6D4] font-medium transition-colors">
-            Sign in
-          </Link>
-        </div>
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="w-full max-w-md bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] p-8 rounded-[24px] backdrop-blur-xl shadow-[0_0_40px_rgba(34,211,238,0.12)] transition-all duration-300"
+    >
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">
+          Reset Password
+        </h1>
+        <p className="text-sm text-neutral-400">
+          Enter your new password below
+        </p>
       </div>
-    </div>
+
+      <Suspense fallback={<div className="flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-[#22D3EE]" /></div>}>
+        <ResetPasswordForm />
+      </Suspense>
+      
+      <div className="mt-8 text-center text-sm text-neutral-400 border-t border-white/10 pt-6">
+        Remember your password?{" "}
+        <Link href="/login" className="text-[#22D3EE] hover:text-[#06B6D4] font-medium transition-colors hover:underline">
+          Sign in
+        </Link>
+      </div>
+    </motion.div>
   )
 }

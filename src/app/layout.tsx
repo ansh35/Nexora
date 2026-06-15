@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { PusherProvider } from "@/components/providers/PusherProvider";
+import { MotionProvider } from "@/components/motion/motion-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <PusherProvider>
-            {children}
+            <MotionProvider>
+              {children}
+            </MotionProvider>
           </PusherProvider>
         </QueryProvider>
       </body>

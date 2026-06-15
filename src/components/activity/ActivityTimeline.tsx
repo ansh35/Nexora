@@ -81,7 +81,7 @@ export function ActivityTimeline() {
             {/* Timeline dot */}
             <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#22D3EE] shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
             
-            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 hover:bg-white/[0.04] transition-colors">
+            <div className="bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all p-4 hover:bg-white/[0.04] transition-colors">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-sm font-medium text-white overflow-hidden border border-white/10">
@@ -130,14 +130,14 @@ export function ActivityTimeline() {
             <button
               onClick={handlePrev}
               disabled={page === 1 || loading}
-              className="p-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 bg-white/[0.05] hover:bg-white/10 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNext}
               disabled={page === totalPages || loading}
-              className="p-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 bg-white/[0.05] hover:bg-white/10 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

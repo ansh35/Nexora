@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Bell, Loader2 } from "lucide-react"
+import { Activity, Loader2 } from "lucide-react"
 import { getActivities } from "@/actions/activity"
 import { formatDistanceToNow } from "date-fns"
 import { usePusher } from "@/components/providers/PusherProvider"
@@ -110,7 +110,7 @@ export function ActivityFeedPopover({ organizationId }: { organizationId?: strin
         onClick={togglePopover}
         className="p-2.5 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white rounded-xl transition-colors border border-white/10 relative"
       >
-        <Bell className="w-5 h-5" />
+        <Activity className="w-5 h-5" />
         {hasNew && (
           <span className="absolute top-2 right-2.5 flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -120,8 +120,8 @@ export function ActivityFeedPopover({ organizationId }: { organizationId?: strin
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[#070B14] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-4">
-          <div className="p-4 border-b border-white/10 bg-white/[0.02]">
+        <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[#070B14] border border-white/[0.08] rounded-[24px] shadow-[0_0_40px_rgba(34,211,238,0.12)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-4">
+          <div className="p-4 border-b border-white/[0.08] bg-white/[0.02]">
             <h3 className="font-semibold text-white">Activity Log</h3>
           </div>
           
@@ -137,7 +137,7 @@ export function ActivityFeedPopover({ organizationId }: { organizationId?: strin
             ) : (
               <div className="space-y-1">
                 {activities.map((activity) => (
-                  <div key={activity.id} className="flex gap-3 p-3 hover:bg-white/[0.04] rounded-xl transition-colors">
+                  <div key={activity.id} className="flex gap-3 p-3 hover:bg-white/[0.05] rounded-[20px] transition-colors">
                     <div className="w-8 h-8 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-xs font-medium text-white overflow-hidden">
                       {activity.user.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -163,8 +163,8 @@ export function ActivityFeedPopover({ organizationId }: { organizationId?: strin
               </div>
             )}
           </div>
-          <div className="p-2 border-t border-white/10 bg-white/[0.02]">
-            <a href="/dashboard/activity" className="block w-full py-2 text-center text-xs font-medium text-[#22D3EE] hover:bg-[#22D3EE]/10 rounded-lg transition-colors">
+          <div className="p-2 border-t border-white/[0.08] bg-white/[0.02]">
+            <a href="/dashboard/activity" className="block w-full py-2 text-center text-xs font-medium text-[#22D3EE] hover:bg-[#22D3EE]/10 rounded-[20px] transition-colors">
               View All Activity
             </a>
           </div>

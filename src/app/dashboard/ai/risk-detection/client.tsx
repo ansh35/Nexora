@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { detectProjectRisks } from "@/actions/ai"
 import { Button } from "@/components/ui/button"
+import { AIFadeUpContainer } from "@/components/motion/ai-motion"
 
 export function RiskDetectionClient({ projects }: { projects: { id: string, name: string }[] }) {
   const [projectId, setProjectId] = useState(projects[0]?.id || "")
@@ -47,7 +48,7 @@ export function RiskDetectionClient({ projects }: { projects: { id: string, name
       {result && (
         <div className="space-y-4 rounded-xl border border-red-500/50 bg-red-500/5 p-6">
           <h3 className="font-semibold text-lg text-red-500">Detected Risks</h3>
-          <div className="grid gap-4">
+          <AIFadeUpContainer className="grid gap-4">
             {result.map((risk: any, idx: number) => (
               <div key={idx} className="rounded-lg bg-card p-4 border border-white/10">
                 <div className="flex items-center gap-2 mb-2">
@@ -57,7 +58,7 @@ export function RiskDetectionClient({ projects }: { projects: { id: string, name
                 <p className="text-sm text-neutral-400"><strong className="text-white/80">Mitigation:</strong> {risk.mitigation}</p>
               </div>
             ))}
-          </div>
+          </AIFadeUpContainer>
         </div>
       )}
     </div>

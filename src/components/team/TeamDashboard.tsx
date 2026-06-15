@@ -5,6 +5,8 @@ import { Search, Plus, Trash2, Mail, Shield, Clock, Copy, Check, MessageCircle }
 import { InviteModal } from "./InviteModal"
 import { removeMember, updateRole, cancelInvitation } from "@/actions/team"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import { useMotion } from "@/components/motion/motion-provider"
+import { EmptyState } from "@/components/feedback/empty-state"
 
 type Member = { id: string; name: string; email: string; role: string; createdAt: Date }
 type Invitation = { id: string; email: string; role: string; token: string; expiresAt: Date }
@@ -52,6 +54,7 @@ function TeamDashboardContent({
   const [copiedToken, setCopiedToken] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const [isMounted, setIsMounted] = useState(false)
+  const { toast } = useMotion()
 
   useEffect(() => {
     setIsMounted(true)
@@ -87,7 +90,15 @@ function TeamDashboardContent({
   const handleRoleChange = (userId: string, newRole: string) => {
     startTransition(async () => {
       const res = await updateRole(userId, newRole)
-      if (res?.error) alert(res.error)
+      if (res?.error) {
+        alert(res.error)
+      } else {
+        toast({
+          title: "Role Updated",
+          description: "Team member's role has been changed.",
+          type: "success"
+        })
+      }
     })
   }
 
@@ -95,7 +106,15 @@ function TeamDashboardContent({
     if (confirm("Are you sure you want to remove this user from the organization?")) {
       startTransition(async () => {
         const res = await removeMember(userId)
-        if (res?.error) alert(res.error)
+        if (res?.error) {
+          alert(res.error)
+        } else {
+          toast({
+            title: "Member Removed",
+            description: "User has been removed from the organization.",
+            type: "success"
+          })
+        }
       })
     }
   }
@@ -104,7 +123,15 @@ function TeamDashboardContent({
     if (confirm("Cancel this invitation?")) {
       startTransition(async () => {
         const res = await cancelInvitation(invitationId)
-        if (res?.error) alert(res.error)
+        if (res?.error) {
+          alert(res.error)
+        } else {
+          toast({
+            title: "Invite Revoked",
+            description: "The invitation has been successfully canceled.",
+            type: "success"
+          })
+        }
       })
     }
   }
@@ -185,7 +212,7 @@ function TeamDashboardContent({
 
           <div className="grid grid-cols-1 gap-4">
             {filteredMembers.map(member => (
-              <div key={member.id} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-colors">
+              <div key={member.id} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all hover:bg-white/[0.04] transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold">
                     {member.name.charAt(0).toUpperCase()}
@@ -238,15 +265,18 @@ function TeamDashboardContent({
       {activeTab === "invites" && canInvite && (
         <div className="space-y-4">
           {pendingInvitations.length === 0 ? (
-            <div className="py-12 text-center text-neutral-500 text-sm">
-              No pending invitations.
-            </div>
+            <EmptyState
+              icon="inbox"
+              title="No pending invitations"
+              description="When you invite team members, they will appear here until they accept."
+              className="py-12"
+            />
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {pendingInvitations.map(invite => (
-                <div key={invite.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl gap-4">
+                <div key={invite.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 bg-white/5 rounded-full">
+                    <div className="p-3 bg-white/[0.05] rounded-full">
                       <Mail className="w-4 h-4 text-neutral-400" />
                     </div>
                     <div>
@@ -275,7 +305,7 @@ function TeamDashboardContent({
                     <button
                       suppressHydrationWarning
                       onClick={() => copyToClipboard(invite.token)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white text-xs rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.05] hover:bg-white/10 text-white text-xs rounded-lg transition-colors"
                     >
                       {copiedToken === invite.token ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                       {copiedToken === invite.token ? "Copied" : "Copy Link"}

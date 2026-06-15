@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { Search, Folder, ListTodo, User, UserPlus, Users, Settings } from "lucide-react"
 import { globalSearch } from "@/actions/search"
 import { useRouter } from "next/navigation"
+import { ModalMotion } from "@/components/motion/modal-motion"
 
 type ProjectType = { id: string; name: string; description: string | null; status: string }
 type TaskType = { id: string; title: string; priority: string; status: string; projectId: string }
@@ -107,13 +108,17 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", handleNavigation)
   }, [isOpen, selectedIndex, flattenResults, handleNavigate])
 
-  if (!isOpen) return null
+
 
   const hasResults = results.projects.length > 0 || results.tasks.length > 0 || results.members.length > 0
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-2xl bg-[#070B14] border border-white/10 rounded-[24px] shadow-2xl overflow-hidden flex flex-col">
+    <ModalMotion 
+      isOpen={isOpen} 
+      onClose={() => setIsOpen(false)}
+      position="top"
+      className="w-full max-w-2xl bg-[#070B14] border border-white/10 rounded-[24px] shadow-2xl overflow-hidden flex flex-col"
+    >
         <div className="flex items-center px-4 border-b border-white/10 bg-white/[0.02]">
           <Search className="w-5 h-5 text-[#22D3EE]" />
           <input
@@ -253,7 +258,6 @@ export function CommandPalette() {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </ModalMotion>
   )
 }

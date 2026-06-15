@@ -47,7 +47,7 @@ export default function SecuritySettingsPage() {
       <h2 className="text-xl font-semibold border-b border-white/10 pb-4">Security Settings</h2>
       
       <div className="space-y-6">
-        <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-4">
+        <div className="p-4 bg-white/[0.02] border border-white/10 rounded-xl space-y-4">
           <div>
             <h3 className="font-medium text-white">Change Password</h3>
             <p className="text-sm text-neutral-400 mt-1">Update your account password.</p>
@@ -58,14 +58,14 @@ export default function SecuritySettingsPage() {
               placeholder="Current Password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="block w-full px-3 py-2 border border-white/10 rounded-xl bg-white/5 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE] transition-all"
+              className="block w-full px-3 py-2 border border-white/10 rounded-xl bg-white/[0.05] text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE] transition-all"
             />
             <input
               type="password"
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="block w-full px-3 py-2 border border-white/10 rounded-xl bg-white/5 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE] transition-all"
+              className="block w-full px-3 py-2 border border-white/10 rounded-xl bg-white/[0.05] text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE] transition-all"
             />
             
             {message && (
@@ -85,7 +85,7 @@ export default function SecuritySettingsPage() {
           </div>
         </div>
 
-        <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-4">
+        <div className="p-4 bg-white/[0.02] border border-white/10 rounded-xl space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-white">Active Sessions</h3>

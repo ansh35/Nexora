@@ -63,8 +63,8 @@ export function KanbanCard({
     >
       <motion.div
         whileHover={canDrag ? { y: -2, scale: 1.02 } : {}}
-        className={`bg-white/[0.05] border border-white/10 p-5 rounded-[24px] backdrop-blur-xl transition-colors flex flex-col h-full ${
-          isDragging ? "shadow-2xl shadow-[#22D3EE]/20 border-[#22D3EE]/50" : "hover:bg-white/[0.08]"
+        className={`bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-5 rounded-[24px] backdrop-blur-xl transition-all duration-300 flex flex-col h-full ${
+          isDragging ? "shadow-[0_0_40px_rgba(34,211,238,0.2)] border-[#22D3EE]/50" : " "
         }`}
       >
         <div className="flex items-start justify-between mb-3">
@@ -104,7 +104,7 @@ export function KanbanCard({
               disabled={!canEdit}
               value={task.assigneeId || "UNASSIGNED"}
               onChange={(e) => onAssign(task.id, e.target.value)}
-              className="bg-white/[0.04] border border-white/10 text-[10px] text-white rounded-lg px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE] appearance-none disabled:opacity-50 max-w-[120px] truncate"
+              className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] text-[10px] text-white rounded-xl px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22D3EE] appearance-none disabled:opacity-50 max-w-[120px] truncate"
             >
               <option value="UNASSIGNED" className="bg-[#070B14]">Unassigned</option>
               {organizationMembers.map(m => (

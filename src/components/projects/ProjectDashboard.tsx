@@ -4,6 +4,9 @@ import { useState, useRef, useTransition } from "react"
 import { Search, Plus, Archive, Trash2, Edit2, Loader2, FolderOpen } from "lucide-react"
 import { ProjectModal } from "./ProjectModal"
 import { archiveProject, deleteProject } from "@/actions/projects"
+import { useMotion } from "@/components/motion/motion-provider"
+import { EmptyState } from "@/components/feedback/empty-state"
+import { SkeletonGrid } from "@/components/feedback/skeleton-loader"
 
 type Project = {
   id: string
@@ -28,6 +31,7 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
+  const { toast } = useMotion()
   
   const canCreate = userRole === "OWNER" || userRole === "ADMIN"
   const canEdit = userRole === "OWNER" || userRole === "ADMIN"
@@ -44,6 +48,11 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
   const handleArchive = (id: string) => {
     startTransition(async () => {
       await archiveProject(id)
+      toast({
+        title: "Project Archived",
+        description: "Project has been moved to the archive.",
+        type: "success"
+      })
     })
   }
 
@@ -51,6 +60,11 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
     if (confirm("Are you sure you want to permanently delete this project?")) {
       startTransition(async () => {
         await deleteProject(id)
+        toast({
+          title: "Project Deleted",
+          description: "Project has been permanently removed.",
+          type: "success"
+        })
       })
     }
   }
@@ -71,7 +85,7 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
     const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100)
 
     return (
-      <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl group hover:bg-white/[0.08] transition-colors flex flex-col h-full relative overflow-hidden">
+      <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 rounded-[24px] backdrop-blur-xl group   transition-all duration-300 flex flex-col h-full relative overflow-hidden">
         {/* Glow effect on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-tr from-[#22D3EE]/5 to-transparent" />
@@ -201,9 +215,8 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
       </div>
 
       {isPending && (
-        <div className="flex items-center text-[#22D3EE] text-sm">
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          Processing...
+        <div className="mb-6">
+          <SkeletonGrid count={3} />
         </div>
       )}
 
@@ -211,17 +224,13 @@ export function ProjectDashboard({ initialProjects, userRole }: ProjectDashboard
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeProjects.map(p => <ProjectCard key={p.id} project={p} />)}
         </div>
-      ) : (
-        <div className="bg-white/[0.02] border border-white/5 rounded-[24px] p-12 flex flex-col items-center justify-center text-center">
-          <FolderOpen className="w-12 h-12 text-neutral-600 mb-4" />
-          <h3 className="text-xl font-medium text-neutral-300 mb-2">No active projects</h3>
-          <p className="text-neutral-500 max-w-sm">
-            {searchQuery 
-              ? "No projects match your search." 
-              : "Get started by creating your first project."}
-          </p>
-        </div>
-      )}
+      ) : !isPending ? (
+        <EmptyState 
+          icon="folder"
+          title="No active projects"
+          description={searchQuery ? "No projects match your search." : "Get started by creating your first project."}
+        />
+      ) : null}
 
       {archivedProjects.length > 0 && (
         <div className="pt-8 mt-8 border-t border-white/10">

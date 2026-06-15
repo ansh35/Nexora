@@ -57,14 +57,14 @@ export function WelcomeOnboarding({ userName, organizationName, hasProjects }: W
           </div>
 
           <div className="space-y-3 pt-4">
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/10">
               <div className="w-8 h-8 rounded-full bg-[#22D3EE]/10 text-[#22D3EE] flex items-center justify-center font-bold text-sm shrink-0">1</div>
               <div>
                 <h4 className="font-medium text-white">Create your first project</h4>
                 <p className="text-sm text-neutral-500 mt-1">Organize your work by creating a project in the dashboard.</p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/10">
               <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/10 text-[#8B5CF6] flex items-center justify-center font-bold text-sm shrink-0">2</div>
               <div>
                 <h4 className="font-medium text-white">Invite your team</h4>

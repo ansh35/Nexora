@@ -45,7 +45,7 @@ export default async function ProfileSettingsPage() {
               id="name"
               defaultValue={session.user.name!}
               required
-              className="block w-full pl-10 pr-3 py-2 border border-white/10 rounded-xl bg-white/5 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE] focus:border-transparent transition-all"
+              className="block w-full pl-10 pr-3 py-2 border border-white/10 rounded-xl bg-white/[0.05] text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE] focus:border-transparent transition-all"
             />
           </div>
         </div>
@@ -62,7 +62,7 @@ export default async function ProfileSettingsPage() {
               id="email"
               defaultValue={session.user.email!}
               disabled
-              className="block w-full pl-10 pr-3 py-2 border border-white/5 rounded-xl bg-white/[0.02] text-neutral-400 cursor-not-allowed"
+              className="block w-full pl-10 pr-3 py-2 border border-white/10 rounded-xl bg-white/[0.02] text-neutral-400 cursor-not-allowed"
             />
           </div>
           <p className="text-xs text-neutral-500 mt-1 flex items-center gap-1">

@@ -59,7 +59,7 @@ export default function AIToolsPage() {
             <Link 
               key={tool.href} 
               href={tool.href}
-              className="group rounded-xl border bg-card p-6 shadow transition-all hover:border-[#22D3EE]/50 hover:bg-[#22D3EE]/5"
+              className="group bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300 flex flex-col h-full"
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-lg bg-[#22D3EE]/10 text-[#22D3EE] group-hover:scale-110 transition-transform">

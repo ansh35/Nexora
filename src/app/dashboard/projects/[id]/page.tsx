@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { TaskDashboard } from "@/components/tasks/TaskDashboard"
 import { ActivityFeedPopover } from "@/components/activity/ActivityFeedPopover"
 import { ActiveUsers } from "@/components/activity/ActiveUsers"
+import { NotificationPopover } from "@/components/dashboard/NotificationPopover"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
@@ -42,7 +43,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
   return (
     <div className="min-h-screen bg-[#070B14] p-8 text-white font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
-        <header className="relative z-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
+        <header className="relative z-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard"
@@ -64,11 +65,12 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
           </div>
           <div className="flex items-center gap-4 self-end sm:self-auto">
             <ActiveUsers organizationId={session.user.organizationId} />
+            <NotificationPopover userId={session.user.id} />
             <ActivityFeedPopover organizationId={session.user.organizationId} />
           </div>
         </header>
 
-        <main className="bg-white/[0.02] border border-white/5 p-8 rounded-[24px] backdrop-blur-xl">
+        <main className="bg-white/[0.02] border border-white/10 p-8 rounded-[24px] backdrop-blur-xl">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-[#22D3EE]">Project Tasks</h2>
             <p className="text-sm text-neutral-400">Manage tasks for this project.</p>

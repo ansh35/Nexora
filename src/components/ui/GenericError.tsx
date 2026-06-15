@@ -16,7 +16,7 @@ export function GenericError({
 
   return (
     <div className="min-h-[400px] flex items-center justify-center p-8">
-      <div className="bg-white/[0.04] border border-red-500/20 p-8 rounded-[24px] backdrop-blur-xl text-center max-w-md w-full">
+      <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-8 rounded-[24px] backdrop-blur-xl text-center max-w-md w-full shadow-[0_0_40px_rgba(239,68,68,0.1)]">
         <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>

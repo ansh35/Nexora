@@ -16,7 +16,7 @@ export default function DashboardError({
 
   return (
     <div className="min-h-screen bg-[#070B14] p-8 flex items-center justify-center text-white font-sans w-full">
-      <div className="max-w-md w-full bg-white/[0.04] p-8 rounded-[24px] border border-white/10 backdrop-blur-xl text-center space-y-6">
+      <div className="max-w-md w-full bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-8 transition-all duration-300 text-center space-y-6">
         <div className="flex justify-center">
           <div className="p-4 bg-red-500/10 rounded-full">
             <AlertTriangle className="w-10 h-10 text-red-400" />

@@ -18,6 +18,8 @@ import { useMutation } from "@tanstack/react-query"
 import { updateTaskStatus } from "@/actions/tasks"
 import { KanbanColumn } from "./KanbanColumn"
 import { KanbanCard } from "./KanbanCard"
+import { useMotion } from "@/components/motion/motion-provider"
+import { SkeletonCard } from "@/components/feedback/skeleton-loader"
 
 type Task = {
   id: string
@@ -57,6 +59,7 @@ export function KanbanBoard({
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [isMounted, setIsMounted] = useState(false)
+  const { toast } = useMotion()
 
   useEffect(() => {
     // eslint-disable-next-line
@@ -87,12 +90,21 @@ export function KanbanBoard({
       if (res?.error) throw new Error(res.error)
       return res
     },
+    onSuccess: () => {
+      toast({
+        title: "Status Updated",
+        description: "Task status has been updated.",
+        type: "success"
+      })
+    },
     onError: (error) => {
-      // Revert optimistic update on error by resetting from initialTasks
-      // or we can implement a more robust rollback if needed.
       console.error(error)
       setTasks(initialTasks) 
-      alert(`Failed to update task: ${error.message}`)
+      toast({
+        title: "Update Failed",
+        description: `Failed to update task: ${error.message}`,
+        type: "error"
+      })
     }
   })
 
@@ -169,8 +181,13 @@ export function KanbanBoard({
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-[600px]">
         {COLUMNS.map((col) => (
-          <div key={col.id} className="bg-white/[0.02] border border-white/5 rounded-[24px] p-4 h-full flex flex-col items-center justify-center">
-            <span className="text-neutral-500 font-medium text-sm animate-pulse">Loading {col.title}...</span>
+          <div key={col.id} className="bg-[#070B14]/50 border border-white/[0.08] rounded-[24px] p-4 flex flex-col gap-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 rounded-full bg-neutral-700" />
+              <div className="h-5 w-24 bg-white/5 rounded-md" />
+            </div>
+            <SkeletonCard className="h-32 min-h-0" />
+            <SkeletonCard className="h-32 min-h-0" />
           </div>
         ))}
       </div>
@@ -202,18 +219,23 @@ export function KanbanBoard({
         ))}
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={{
+        duration: 250,
+        easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+      }}>
         {activeTask ? (
-          <KanbanCard
-            task={activeTask}
-            canEdit={userRole === "OWNER" || userRole === "ADMIN"}
-            canDelete={userRole === "OWNER"}
-            canDrag={true} // It's already dragging
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onAssign={() => {}}
-            organizationMembers={organizationMembers}
-          />
+          <div className="opacity-95 rotate-3 scale-105 shadow-[0_20px_40px_rgba(34,211,238,0.15)] rounded-[24px] cursor-grabbing transition-transform">
+            <KanbanCard
+              task={activeTask}
+              canEdit={userRole === "OWNER" || userRole === "ADMIN"}
+              canDelete={userRole === "OWNER"}
+              canDrag={true} // It's already dragging
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onAssign={() => {}}
+              organizationMembers={organizationMembers}
+            />
+          </div>
         ) : null}
       </DragOverlay>
     </DndContext>

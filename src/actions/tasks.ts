@@ -5,6 +5,7 @@ import { auth } from "@/../auth"
 import { revalidatePath } from "next/cache"
 import { logActivity } from "@/lib/activity"
 import { pusherServer } from "@/lib/pusher"
+import { createNotification } from "@/lib/notification"
 
 type TaskData = {
   title: string
@@ -40,6 +41,27 @@ export async function createTask(projectId: string, data: TaskData) {
       entityId: task.id,
       entityName: task.title
     })
+
+    // Notify Project Owner if the actor is not the owner
+    if (projectId !== "GLOBAL") {
+      try {
+        const project = await prisma.project.findUnique({
+          where: { id: projectId },
+          select: { ownerId: true }
+        })
+        if (project?.ownerId) {
+          await createNotification({
+            userId: project.ownerId,
+            organizationId: session.user.organizationId,
+            type: "TASK_CREATED",
+            message: `A new task '${task.title}' was added to your project.`,
+            link: `/dashboard/projects/${projectId}`
+          })
+        }
+      } catch (err) {
+        console.error("Failed to notify project owner:", err)
+      }
+    }
 
     await pusherServer.trigger(
       `private-org-${session.user.organizationId}`,
@@ -137,6 +159,17 @@ export async function assignTask(id: string, assigneeId: string | null) {
       entityId: task.id,
       entityName: task.title
     })
+
+    // Notify Assignee
+    if (assigneeId) {
+      await createNotification({
+        userId: assigneeId,
+        organizationId: session.user.organizationId,
+        type: "TASK_ASSIGNED",
+        message: `You have been assigned to '${task.title}'.`,
+        link: `/dashboard/projects/${task.projectId}`
+      })
+    }
 
     await pusherServer.trigger(
       `private-org-${session.user.organizationId}`,

@@ -4,6 +4,9 @@
 import { useState, useTransition } from "react"
 import { Loader2, X, Copy, Check, MessageCircle, AlertCircle } from "lucide-react"
 import { inviteMember } from "@/actions/team"
+import { DrawerMotion } from "@/components/motion/drawer-motion"
+import { useMotion } from "@/components/motion/motion-provider"
+import { ActionFeedback, ActionState } from "@/components/feedback/action-feedback"
 
 export function InviteModal({ isOpen, onClose, userRole }: { isOpen: boolean; onClose: () => void; userRole: string }) {
   const [email, setEmail] = useState("")
@@ -13,25 +16,37 @@ export function InviteModal({ isOpen, onClose, userRole }: { isOpen: boolean; on
   const [orgName, setOrgName] = useState("")
   const [copied, setCopied] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [buttonState, setButtonState] = useState<ActionState>("idle")
+  const { toast } = useMotion()
 
-  if (!isOpen) return null
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     
-    if (!email.trim() || !email.includes("@")) {
-      setError("Valid email is required")
+    if (!email.trim()) {
+      setError("Email address is required")
       return
     }
 
+    setButtonState("loading")
     startTransition(async () => {
       const result = await inviteMember(email, role)
       if (result.error) {
         setError(result.error)
+        setButtonState("error")
+        setTimeout(() => setButtonState("idle"), 3000)
       } else if (result.token) {
         setSuccessToken(result.token)
         setOrgName(result.organizationName || "the workspace")
+        toast({
+          title: "Invite Created",
+          description: "The invitation link is ready to be shared.",
+          type: "success"
+        })
+        setButtonState("success")
+        // Don't auto-reset state or close, because we need to show the success view with the link
       }
     })
   }
@@ -63,13 +78,17 @@ export function InviteModal({ isOpen, onClose, userRole }: { isOpen: boolean; on
     setError("")
     setSuccessToken(null)
     setOrgName("")
+    setButtonState("idle")
     onClose()
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-[#070B14] border border-white/10 rounded-[24px] shadow-2xl overflow-hidden flex flex-col relative">
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/[0.02]">
+    <DrawerMotion 
+      isOpen={isOpen} 
+      onClose={handleClose} 
+      className="w-full max-w-md bg-[#070B14] border border-white/[0.08] rounded-[24px] shadow-[0_0_40px_rgba(34,211,238,0.12)] overflow-hidden flex flex-col relative"
+    >
+        <div className="flex items-center justify-between p-6 border-b border-white/[0.08] bg-white/[0.02]">
           <h2 className="text-xl font-bold text-white">Invite Team Member</h2>
           <button onClick={handleClose} className="text-neutral-400 hover:text-white transition-colors">
             <X className="w-5 h-5" />
@@ -128,23 +147,23 @@ export function InviteModal({ isOpen, onClose, userRole }: { isOpen: boolean; on
             <div className="space-y-2">
               <label className="text-sm font-medium text-neutral-300">Email Address</label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isPending}
-                placeholder="colleague@example.com"
-                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all"
-              />
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isPending}
+              placeholder="colleague@company.com"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all"
+            />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-neutral-300">Role</label>
               <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                disabled={isPending}
-                className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all appearance-none"
-              >
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              disabled={isPending}
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/50 transition-all appearance-none"
+            >
                 <option value="MEMBER" className="bg-[#070B14]">Member (View Only)</option>
                 <option value="ADMIN" className="bg-[#070B14]">Admin (Manage Projects)</option>
                 {userRole === "OWNER" && (
@@ -163,22 +182,24 @@ export function InviteModal({ isOpen, onClose, userRole }: { isOpen: boolean; on
               <button
                 type="button"
                 onClick={handleClose}
-                disabled={isPending}
+                disabled={isPending || buttonState === "loading"}
                 className="flex-1 bg-white/[0.05] hover:bg-white/[0.1] text-white font-medium py-3 rounded-xl transition-colors"
               >
                 Cancel
               </button>
-              <button
+              <ActionFeedback
                 type="submit"
+                state={buttonState}
                 disabled={isPending}
-                className="flex-1 bg-[#22D3EE] hover:bg-[#06B6D4] text-[#070B14] font-semibold py-3 rounded-xl transition-colors flex items-center justify-center"
-              >
-                {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Send Invite"}
-              </button>
+                className="flex-1"
+                idleText="Generate Link"
+                loadingText="Generating..."
+                successText="Generated!"
+                errorText="Failed"
+              />
             </div>
           </form>
         )}
-      </div>
-    </div>
+      </DrawerMotion>
   )
 }

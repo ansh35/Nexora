@@ -38,25 +38,25 @@ export default async function BillingPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-card text-card-foreground shadow">
+        <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl transition-all duration-300">
           <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Projects</h3>
+            <h3 className="tracking-tight text-sm font-medium text-neutral-400">Projects</h3>
           </div>
           <div className="p-6 pt-0">
             <div className="text-2xl font-bold">{projectCount} / {subscriptionPlan.features.maxProjects === Infinity ? "Unlimited" : subscriptionPlan.features.maxProjects}</div>
           </div>
         </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow">
+        <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl transition-all duration-300">
           <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Users</h3>
+            <h3 className="tracking-tight text-sm font-medium text-neutral-400">Users</h3>
           </div>
           <div className="p-6 pt-0">
             <div className="text-2xl font-bold">{userCount} / {subscriptionPlan.features.maxUsers === Infinity ? "Unlimited" : subscriptionPlan.features.maxUsers}</div>
           </div>
         </div>
-        <div className="rounded-xl border bg-card text-card-foreground shadow">
+        <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl transition-all duration-300">
           <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">AI Requests (Monthly)</h3>
+            <h3 className="tracking-tight text-sm font-medium text-neutral-400">AI Requests (Monthly)</h3>
           </div>
           <div className="p-6 pt-0">
             <div className="text-2xl font-bold">{aiUsageCount} / {subscriptionPlan.features.maxAiRequests === Infinity ? "Unlimited" : subscriptionPlan.features.maxAiRequests}</div>

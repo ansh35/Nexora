@@ -101,10 +101,10 @@ export function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group border ${
                     isActive
-                      ? "bg-[#22D3EE]/10 text-[#22D3EE] font-medium"
-                      : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                      ? "bg-[#22D3EE]/10 text-[#22D3EE] font-medium border-[#22D3EE]/20 shadow-[0_0_20px_rgba(34,211,238,0.15)]"
+                      : "text-neutral-400 hover:bg-white/[0.06] hover:text-white border-transparent hover:border-white/10"
                   }`}
                 >
                   <Icon 

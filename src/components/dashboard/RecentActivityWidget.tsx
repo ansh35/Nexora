@@ -7,7 +7,7 @@ export async function RecentActivityWidget() {
   
   if (!res || res.error || !res.activities || res.activities.length === 0) {
     return (
-      <div className="bg-white/[0.04] border border-white/10 rounded-[24px] p-6 backdrop-blur-xl h-full flex flex-col items-center justify-center text-center">
+      <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300 h-full flex flex-col items-center justify-center text-center">
         <ActivityIcon className="w-8 h-8 text-neutral-500 mb-3 opacity-50" />
         <h3 className="text-white font-medium">Recent Activity</h3>
         <p className="text-sm text-neutral-500 mt-1">No recent activity.</p>
@@ -26,7 +26,7 @@ export async function RecentActivityWidget() {
   }
 
   return (
-    <div className="bg-white/[0.04] border border-white/10 rounded-[24px] p-6 backdrop-blur-xl h-full flex flex-col">
+    <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-white font-semibold flex items-center gap-2">
           <ActivityIcon className="w-4 h-4 text-[#22D3EE]" />
@@ -40,7 +40,7 @@ export async function RecentActivityWidget() {
       <div className="space-y-4 flex-1">
         {res.activities.map((activity: any) => (
           <div key={activity.id} className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-xs font-medium text-white overflow-hidden border border-white/5">
+            <div className="w-8 h-8 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-xs font-medium text-white overflow-hidden border border-white/10">
               {activity.user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={activity.user.image} alt={activity.user.name} className="w-full h-full object-cover" />

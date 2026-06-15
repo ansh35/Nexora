@@ -34,7 +34,7 @@ export default async function TeamPage() {
   return (
     <div className="min-h-screen bg-[#070B14] p-8 text-white font-sans">
       <div className="max-w-5xl mx-auto space-y-8">
-        <header className="relative z-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
+        <header className="relative z-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] rounded-[24px] backdrop-blur-xl p-6 transition-all duration-300">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-[#22D3EE]/10 rounded-xl">
               <Users className="w-6 h-6 text-[#22D3EE]" />
@@ -49,7 +49,7 @@ export default async function TeamPage() {
           </div>
         </header>
 
-        <main className="bg-white/[0.02] border border-white/5 p-8 rounded-[24px] backdrop-blur-xl min-h-[600px]">
+        <main className="bg-white/[0.02] border border-white/10 p-8 rounded-[24px] backdrop-blur-xl min-h-[600px]">
           <TeamDashboard 
             members={members} 
             pendingInvitations={pendingInvitations} 

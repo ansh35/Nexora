@@ -69,7 +69,7 @@ export default async function DashboardPage() {
         hasProjects={projects.length > 0} 
       />
       <div className="max-w-6xl mx-auto space-y-8">
-        <header className="relative z-50 flex items-center justify-between bg-white/[0.04] p-6 rounded-[24px] border border-white/10 backdrop-blur-xl">
+        <header className="relative z-50 flex items-center justify-between bg-white/[0.05] p-6 rounded-[24px] border border-white/[0.08] backdrop-blur-xl">
           <div>
             <h1 className="text-2xl font-bold text-white">Dashboard</h1>
             <p className="text-neutral-400">Welcome back, {session.user.name}</p>
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
           
           <div className="flex items-center gap-4">
             <ActiveUsers organizationId={org.id} />
-            <NotificationPopover />
+            <NotificationPopover userId={session.user.id} />
             <Link href="/dashboard/settings/profile" className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#22D3EE] to-[#8B5CF6] p-[2px] cursor-pointer hover:opacity-90 transition-opacity">
               <div className="w-full h-full bg-[#070B14] rounded-full flex items-center justify-center font-bold text-white overflow-hidden">
                 {session.user.image ? (
@@ -92,22 +92,22 @@ export default async function DashboardPage() {
         </header>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.08] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(34,211,238,0.1)] group">
+          <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300  hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(34,211,238,0.1)] group">
             <h3 className="text-sm font-medium text-neutral-400 mb-2">Active Projects</h3>
             <p className="text-3xl font-bold text-[#22D3EE] group-hover:scale-105 transform origin-left transition-transform duration-300">{activeProjectsCount}</p>
           </div>
           
-          <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.08] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(245,158,11,0.1)] group">
+          <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300  hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(245,158,11,0.1)] group">
             <h3 className="text-sm font-medium text-neutral-400 mb-2">Pending Tasks</h3>
             <p className="text-3xl font-bold text-[#F59E0B] group-hover:scale-105 transform origin-left transition-transform duration-300">{pendingTasksCount}</p>
           </div>
 
-          <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.08] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(239,68,68,0.1)] group">
+          <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300  hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(239,68,68,0.1)] group">
             <h3 className="text-sm font-medium text-neutral-400 mb-2">Overdue Tasks</h3>
             <p className="text-3xl font-bold text-[#EF4444] group-hover:scale-105 transform origin-left transition-transform duration-300">0</p>
           </div>
 
-          <div className="bg-white/[0.05] border border-white/10 p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.08] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)] group">
+          <div className="bg-white/[0.05] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] shadow-[0_0_40px_rgba(34,211,238,0.12)] p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300  hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)] group">
             <h3 className="text-sm font-medium text-neutral-400 mb-2">Completed (7d)</h3>
             <p className="text-3xl font-bold text-[#10B981] group-hover:scale-105 transform origin-left transition-transform duration-300">{completedTasksThisWeekCount}</p>
           </div>
