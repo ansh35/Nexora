@@ -4,6 +4,10 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/../auth"
 import { revalidatePath } from "next/cache"
 
+function toErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : String(error) || fallback
+}
+
 export async function getNotifications() {
   const session = await auth()
   if (!session?.user) return { error: "Unauthorized" }
@@ -21,7 +25,7 @@ export async function getNotifications() {
     return { notifications, unreadCount }
   } catch (error: unknown) {
     console.error("Error fetching notifications:", error)
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to fetch notifications" }
+    return { error: toErrorMessage(error, "Failed to fetch notifications") }
   }
 }
 
@@ -37,7 +41,7 @@ export async function markAsRead(id: string) {
     revalidatePath("/dashboard/notifications")
     return { success: true }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to mark as read" }
+    return { error: toErrorMessage(error, "Failed to mark as read") }
   }
 }
 
@@ -53,6 +57,6 @@ export async function markAllAsRead() {
     revalidatePath("/dashboard/notifications")
     return { success: true }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to mark all as read" }
+    return { error: toErrorMessage(error, "Failed to mark all as read") }
   }
 }

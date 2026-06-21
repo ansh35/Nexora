@@ -12,6 +12,10 @@ import { executeRiskAnalysis } from "@/services/ai/risk-analysis"
 import { executeSprintGenerator } from "@/services/ai/sprint-generator"
 import { executeTitleEnhancement, executeDescriptionGeneration } from "@/services/ai/writing-assistant"
 
+function toErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : String(error) || fallback
+}
+
 async function verifyAccessAndQuota() {
   const session = await auth()
   if (!session?.user?.organizationId) throw new Error("Unauthorized")
@@ -36,7 +40,7 @@ export async function generateTaskBreakdown(taskId: string) {
     
     return { success: true, data: result.subtasks }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate task breakdown" }
+    return { error: toErrorMessage(error, "Failed to generate task breakdown") }
   }
 }
 
@@ -49,7 +53,7 @@ export async function generateProjectPlan(name: string, description: string) {
     
     return { success: true, data: result.phases }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate project plan" }
+    return { error: toErrorMessage(error, "Failed to generate project plan") }
   }
 }
 
@@ -67,7 +71,7 @@ export async function parseMeetingNotes(projectId: string, notes: string) {
     
     return { success: true, data: result.tasks }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to parse meeting notes" }
+    return { error: toErrorMessage(error, "Failed to parse meeting notes") }
   }
 }
 
@@ -85,7 +89,7 @@ export async function generateTaskSummaries(projectId: string) {
     
     return { success: true, data: result }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate summary" }
+    return { error: toErrorMessage(error, "Failed to generate summary") }
   }
 }
 
@@ -103,7 +107,7 @@ export async function detectProjectRisks(projectId: string) {
     
     return { success: true, data: result.risks }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to detect risks" }
+    return { error: toErrorMessage(error, "Failed to detect risks") }
   }
 }
 
@@ -123,7 +127,7 @@ export async function generateSprint(projectId: string, focusArea: string) {
     
     return { success: true, data: { sprintGoal: result.sprintGoal, tasks: selectedTasks } }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate sprint" }
+    return { error: toErrorMessage(error, "Failed to generate sprint") }
   }
 }
 
@@ -136,7 +140,7 @@ export async function enhanceTitle(currentTitle: string, context: string) {
     
     return { success: true, data: result.title }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to enhance title" }
+    return { error: toErrorMessage(error, "Failed to enhance title") }
   }
 }
 
@@ -149,6 +153,6 @@ export async function generateDescription(title: string, context: string) {
     
     return { success: true, data: result.description }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) || "Failed to generate description" }
+    return { error: toErrorMessage(error, "Failed to generate description") }
   }
 }

@@ -67,8 +67,7 @@ export function NotificationPopover({ userId }: { userId: string }) {
 
   const handleToggle = () => {
     if (!isOpen) {
-      // eslint-disable-next-line
-    fetchNotifications()
+      fetchNotifications()
     }
     setIsOpen(!isOpen)
   }

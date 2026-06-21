@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 
 import prisma from "@/lib/prisma"
@@ -10,7 +9,10 @@ export async function getActivities(page = 1, limit = 20) {
   if (!session?.user?.organizationId) return { error: "Unauthorized" }
 
   try {
-    const whereClause: any = { organizationId: session.user.organizationId }
+    const whereClause: {
+      organizationId: string
+      userId?: string
+    } = { organizationId: session.user.organizationId }
 
     // Members can only see their own activities
     if (session.user.role === "MEMBER") {

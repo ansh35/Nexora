@@ -5,13 +5,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const organizationCount = await prisma.organization.count();
+    // Use $runCommandRaw or a lightweight ping instead of exposing counts
+    await prisma.$runCommandRaw({ ping: 1 });
     
     return NextResponse.json(
       { 
         status: "success", 
-        message: "Connected to MongoDB successfully", 
-        organizationCount 
+        message: "Connected to MongoDB successfully"
       },
       { status: 200 }
     );
@@ -20,8 +20,7 @@ export async function GET() {
     return NextResponse.json(
       { 
         status: "error", 
-        message: "Failed to connect to the database",
-        error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : "Unknown error"
+        message: "Failed to connect to the database"
       },
       { status: 500 }
     );

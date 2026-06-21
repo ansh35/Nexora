@@ -81,7 +81,8 @@ export async function inviteMember(email: string, role: string) {
     })
 
     revalidatePath("/dashboard/team")
-    return { success: true, token, organizationName: org?.name || "your workspace" } // Returning token and org name for local demo
+    // Token is returned for the copy-link UX feature in InviteModal (email delivery may be limited in demo environments)
+    return { success: true, token, organizationName: org?.name || "your workspace" }
   } catch (error) {
     console.error("Failed to invite member:", error)
     return { error: "Failed to invite member" }

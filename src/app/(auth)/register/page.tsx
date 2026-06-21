@@ -15,7 +15,8 @@ import { register } from "@/actions/auth"
 export default function RegisterPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+  const rawCallback = searchParams.get("callbackUrl")
+  const callbackUrl = rawCallback?.startsWith("/") ? rawCallback : "/dashboard"
 
   const [error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")

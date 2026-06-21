@@ -15,7 +15,8 @@ import { login } from "@/actions/auth"
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+  const rawCallback = searchParams.get("callbackUrl")
+  const callbackUrl = rawCallback?.startsWith("/") ? rawCallback : "/dashboard"
   
   const [error, setError] = useState<string | undefined>("")
   const [isPending, startTransition] = useTransition()

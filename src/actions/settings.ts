@@ -2,6 +2,7 @@
 
 import { auth } from "@/../auth"
 import prisma from "@/lib/prisma"
+import bcryptjs from "bcryptjs"
 import { revalidatePath } from "next/cache"
 
 export async function updateProfile(formData: FormData) {
@@ -32,8 +33,6 @@ export async function updateProfile(formData: FormData) {
   }
 }
 
-import bcryptjs from "bcryptjs"
-
 export async function updatePassword(formData: FormData) {
   try {
     const session = await auth()
@@ -61,8 +60,8 @@ export async function updatePassword(formData: FormData) {
       return { error: "Current password is incorrect" }
     }
 
-    if (newPassword.length < 8) {
-      return { error: "New password must be at least 8 characters long" }
+    if (newPassword.length < 8 || newPassword.length > 10) {
+      return { error: "New password must be between 8 and 10 characters long" }
     }
 
     const hashedNewPassword = await bcryptjs.hash(newPassword, 10)

@@ -16,8 +16,6 @@ import {
   CreditCard,
   Menu, 
   X, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  LogOut,
   Sparkles
 } from "lucide-react"
 
@@ -74,8 +72,7 @@ export function Sidebar() {
       {isOpen && (
         <div 
           className="md:hidden fixed inset-0 z-[50] bg-black/60 backdrop-blur-sm"
-          onClick={() => // eslint-disable-next-line
-    setIsOpen(false)}
+          onClick={() => setIsOpen(false)}
         />
       )}
 

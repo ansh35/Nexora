@@ -3,6 +3,10 @@
 import { auth } from "@/../auth"
 import { billingProvider } from "@/services/billing/developer-billing-provider"
 
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
 async function verifyOwner() {
   const session = await auth()
   if (!session?.user?.organizationId) throw new Error("Unauthorized")
@@ -16,7 +20,7 @@ export async function simulateUpgrade(planId: string) {
     await billingProvider.upgrade(orgId, planId)
     return { success: true }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) }
+    return { error: toErrorMessage(error) }
   }
 }
 
@@ -26,6 +30,6 @@ export async function simulateDowngrade(planId: string) {
     await billingProvider.downgrade(orgId, planId)
     return { success: true }
   } catch (error: unknown) {
-    return { error: error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error) }
+    return { error: toErrorMessage(error) }
   }
 }

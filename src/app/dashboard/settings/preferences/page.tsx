@@ -1,29 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useMotion } from "@/components/motion/motion-provider"
 
 export default function PreferencesSettingsPage() {
-  const [theme, setTheme] = useState("Dark Mode (Luxury)")
-  const [language, setLanguage] = useState("English (US)")
-  const [timezone, setTimezone] = useState("UTC (Auto)")
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined") return localStorage.getItem("app_theme") || "Dark Mode (Luxury)"
+    return "Dark Mode (Luxury)"
+  })
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== "undefined") return localStorage.getItem("app_language") || "English (US)"
+    return "English (US)"
+  })
+  const [timezone, setTimezone] = useState(() => {
+    if (typeof window !== "undefined") return localStorage.getItem("app_timezone") || "UTC (Auto)"
+    return "UTC (Auto)"
+  })
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: "error", text: string } | null>(null)
+  const [message, setMessage] = useState<{ type: "error"; text: string } | null>(null)
   const { toast } = useMotion()
-
-  // Load preferences from local storage on mount
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("app_theme")
-    const savedLang = localStorage.getItem("app_language")
-    const savedTz = localStorage.getItem("app_timezone")
-
-    // eslint-disable-next-line
-    if (savedTheme) setTheme(savedTheme)
-    // eslint-disable-next-line
-    if (savedLang) setLanguage(savedLang)
-    // eslint-disable-next-line
-    if (savedTz) setTimezone(savedTz)
-  }, [])
 
   const handleSave = () => {
     setLoading(true)

@@ -12,8 +12,8 @@ import { motion } from "framer-motion"
 import { resetPassword } from "@/actions/auth"
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(6, { message: "Minimum 6 characters required" }),
-  confirmPassword: z.string().min(6, { message: "Minimum 6 characters required" }),
+  password: z.string().min(8, { message: "Minimum 8 characters required" }).max(10, { message: "Password cannot exceed 10 characters" }),
+  confirmPassword: z.string().min(8, { message: "Minimum 8 characters required" }).max(10, { message: "Password cannot exceed 10 characters" }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],

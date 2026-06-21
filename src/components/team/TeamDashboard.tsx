@@ -57,13 +57,14 @@ function TeamDashboardContent({
   const { toast } = useMotion()
 
   useEffect(() => {
-    // eslint-disable-next-line
-    setIsMounted(true)
-    if (searchParams.get("invite") === "true") {
-      // eslint-disable-next-line
-      setIsInviteModalOpen(true)
+    startTransition(() => setIsMounted(true))
+  }, [])
+
+  useEffect(() => {
+    if (isMounted && searchParams.get("invite") === "true") {
+      startTransition(() => setIsInviteModalOpen(true))
     }
-  }, [searchParams])
+  }, [isMounted, searchParams])
 
   if (!isMounted) {
     return (
