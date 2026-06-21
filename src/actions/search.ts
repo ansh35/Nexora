@@ -7,7 +7,7 @@ export async function globalSearch(query: string) {
   const session = await auth()
   if (!session?.user?.organizationId) return { projects: [], tasks: [], members: [] }
 
-  const q = query.toLowerCase()
+  const q = query.toLowerCase().substring(0, 100)
   if (!q.trim()) return { projects: [], tasks: [], members: [] }
 
   const orgId = session.user.organizationId

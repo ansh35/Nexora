@@ -11,7 +11,7 @@ import { motion } from "framer-motion"
 import { resetPasswordRequest } from "@/actions/auth"
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
+  email: z.string().email({ message: "Invalid email address" }).max(255, { message: "Email cannot exceed 255 characters" }),
 })
 
 export default function ForgotPasswordPage() {

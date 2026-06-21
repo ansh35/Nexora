@@ -29,7 +29,7 @@ export async function register(data: RegisterInput) {
 
     const hashedPassword = await bcryptjs.hash(password, 10)
 
-    const baseSlug = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
+    const baseSlug = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
     let finalSlug = baseSlug
     let counter = 1
     while (await prisma.organization.findUnique({ where: { slug: finalSlug } })) {
