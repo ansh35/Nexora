@@ -1,7 +1,17 @@
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export const getVerificationEmailTemplate = (token: string) => {
-  const verifyUrl = `${NEXT_PUBLIC_APP_URL}/verify-email?token=${token}`;
+  const verifyUrl = `${NEXT_PUBLIC_APP_URL}/verify-email?token=${encodeURIComponent(token)}`;
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #070B14; color: #ffffff; border-radius: 12px; border: 1px solid #1f2937;">
@@ -16,7 +26,7 @@ export const getVerificationEmailTemplate = (token: string) => {
 };
 
 export const getPasswordResetEmailTemplate = (token: string) => {
-  const resetUrl = `${NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
+  const resetUrl = `${NEXT_PUBLIC_APP_URL}/reset-password?token=${encodeURIComponent(token)}`;
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #070B14; color: #ffffff; border-radius: 12px; border: 1px solid #1f2937;">
@@ -31,12 +41,14 @@ export const getPasswordResetEmailTemplate = (token: string) => {
 };
 
 export const getInvitationEmailTemplate = (inviterName: string, orgName: string, token: string) => {
-  const acceptUrl = `${NEXT_PUBLIC_APP_URL}/invite/accept?token=${token}`;
+  const safeInviter = escapeHtml(inviterName);
+  const safeOrg = escapeHtml(orgName);
+  const acceptUrl = `${NEXT_PUBLIC_APP_URL}/invite/accept?token=${encodeURIComponent(token)}`;
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #070B14; color: #ffffff; border-radius: 12px; border: 1px solid #1f2937;">
       <h2 style="color: #22D3EE; text-align: center;">You've been invited!</h2>
-      <p style="color: #d1d5db; font-size: 16px;"><strong>${inviterName}</strong> has invited you to join <strong>${orgName}</strong> on Nexora.</p>
+      <p style="color: #d1d5db; font-size: 16px;"><strong>${safeInviter}</strong> has invited you to join <strong>${safeOrg}</strong> on Nexora.</p>
       <div style="text-align: center; margin: 32px 0;">
         <a href="${acceptUrl}" style="background-color: #22D3EE; color: #070B14; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Accept Invitation</a>
       </div>
@@ -46,9 +58,11 @@ export const getInvitationEmailTemplate = (inviterName: string, orgName: string,
 };
 
 export const getWelcomeEmailTemplate = (name: string) => {
+  const safeName = escapeHtml(name);
+
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #070B14; color: #ffffff; border-radius: 12px; border: 1px solid #1f2937;">
-      <h2 style="color: #22D3EE; text-align: center;">Welcome to Nexora, ${name}!</h2>
+      <h2 style="color: #22D3EE; text-align: center;">Welcome to Nexora, ${safeName}!</h2>
       <p style="color: #d1d5db; font-size: 16px;">We're thrilled to have you on board. Nexora is designed to help you and your team manage projects and tasks seamlessly.</p>
       <div style="text-align: center; margin: 32px 0;">
         <a href="${NEXT_PUBLIC_APP_URL}/dashboard" style="background-color: #22D3EE; color: #070B14; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Go to Dashboard</a>

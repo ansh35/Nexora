@@ -19,39 +19,51 @@ export async function POST(req: Request) {
       return new NextResponse("Missing parameters", { status: 400 })
     }
 
-    // Security Check: Enforce Organization Scope
-    // e.g., channelName: private-org-abc123xyz
-    // or presence-org-abc123xyz
-    // or private-user-abc123xyz
+    // Strict regex validation for permitted channel patterns:
+    // 1. (private|presence)-org-<24-hex-orgId>
+    // 2. private-user-<24-hex-userId>
+    const orgChannelRegex = /^(private|presence)-org-([a-fA-F0-9]{24})$/
+    const userChannelRegex = /^private-user-([a-fA-F0-9]{24})$/
 
-    if (channelName.startsWith("private-org-") || channelName.startsWith("presence-org-")) {
-      const orgId = channelName.split("-")[2]
-      if (orgId !== session.user.organizationId) {
+    const orgMatch = channelName.match(orgChannelRegex)
+    const userMatch = channelName.match(userChannelRegex)
+
+    if (orgMatch) {
+      const [, type, targetOrgId] = orgMatch
+
+      if (targetOrgId !== session.user.organizationId) {
         return new NextResponse("Forbidden: Cross-organization subscription attempt blocked.", { status: 403 })
       }
-    } else if (channelName.startsWith("private-user-")) {
-      const userId = channelName.split("-")[2]
-      if (userId !== session.user.id) {
-        return new NextResponse("Forbidden: Cannot subscribe to another user's channel.", { status: 403 })
-      }
-    }
 
-    // Presence Channel requires additional user info
-    if (channelName.startsWith("presence-")) {
-      const presenceData = {
-        user_id: session.user.id,
-        user_info: {
-          name: session.user.name,
-          email: session.user.email,
+      if (type === "presence") {
+        const presenceData = {
+          user_id: session.user.id,
+          user_info: {
+            name: session.user.name,
+            email: session.user.email,
+          }
         }
+        const authResponse = pusherServer.authorizeChannel(socketId, channelName, presenceData)
+        return NextResponse.json(authResponse)
       }
-      const authResponse = pusherServer.authorizeChannel(socketId, channelName, presenceData)
+
+      const authResponse = pusherServer.authorizeChannel(socketId, channelName)
       return NextResponse.json(authResponse)
     }
 
-    // Private Channels
-    const authResponse = pusherServer.authorizeChannel(socketId, channelName)
-    return NextResponse.json(authResponse)
+    if (userMatch) {
+      const [, targetUserId] = userMatch
+
+      if (targetUserId !== session.user.id) {
+        return new NextResponse("Forbidden: Cannot subscribe to another user's channel.", { status: 403 })
+      }
+
+      const authResponse = pusherServer.authorizeChannel(socketId, channelName)
+      return NextResponse.json(authResponse)
+    }
+
+    // Reject any channel that does not strictly match the whitelist
+    return new NextResponse("Forbidden: Unrecognized or unauthorized channel scope.", { status: 403 })
     
   } catch (error) {
     console.error("Pusher Auth Error:", error)
