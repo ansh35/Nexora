@@ -14,13 +14,19 @@ export async function updateProfile(formData: FormData) {
 
     const name = formData.get("name") as string
     
-    if (!name || name.trim() === "") {
-      return { error: "Name is required" }
+    const trimmedName = name ? name.trim() : ""
+    
+    if (!trimmedName || trimmedName.length < 2) {
+      return { error: "Name must be at least 2 characters" }
+    }
+
+    if (trimmedName.length > 100) {
+      return { error: "Name cannot exceed 100 characters" }
     }
 
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { name: name.trim() }
+      data: { name: trimmedName }
     })
 
     revalidatePath("/dashboard")

@@ -166,9 +166,14 @@ export async function deleteProject(id: string) {
       return { error: "Project not found or unauthorized" }
     }
 
-    await prisma.project.delete({
-      where: { id }
-    })
+    await prisma.$transaction([
+      prisma.task.deleteMany({
+        where: { projectId: id, organizationId: session.user.organizationId }
+      }),
+      prisma.project.delete({
+        where: { id }
+      })
+    ])
 
     await logActivity({
       organizationId: session.user.organizationId,

@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma"
 import { signIn, signOut } from "@/../auth"
 import { loginSchema, registerSchema, LoginInput, RegisterInput } from "@/lib/validations/auth"
 import { AuthError } from "next-auth"
-import { generateVerificationToken, generatePasswordResetToken } from "@/lib/tokens"
+import { generateVerificationToken, generatePasswordResetToken, hashToken } from "@/lib/tokens"
 import { sendVerificationEmail, sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email/service"
 import { logActivity } from "@/lib/activity"
 
@@ -130,8 +130,9 @@ export async function logout() {
 
 export async function verifyEmail(token: string) {
   try {
+    const hashedToken = hashToken(token)
     const existingToken = await prisma.verificationToken.findUnique({
-      where: { token }
+      where: { token: hashedToken }
     })
 
     if (!existingToken) {
@@ -194,8 +195,9 @@ export async function resetPasswordRequest(email: string) {
 
 export async function resetPassword(token: string, password: string) {
   try {
+    const hashedToken = hashToken(token)
     const existingToken = await prisma.passwordResetToken.findUnique({
-      where: { token }
+      where: { token: hashedToken }
     })
 
     if (!existingToken) {

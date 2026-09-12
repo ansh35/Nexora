@@ -1,8 +1,13 @@
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
 
+export const hashToken = (t: string): string => {
+  return crypto.createHash("sha256").update(t).digest("hex");
+};
+
 export const generateVerificationToken = async (email: string) => {
-  const token = crypto.randomBytes(32).toString("hex");
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour
 
   const existingToken = await prisma.verificationToken.findFirst({
@@ -18,16 +23,18 @@ export const generateVerificationToken = async (email: string) => {
   const verificationToken = await prisma.verificationToken.create({
     data: {
       email,
-      token,
+      token: hashedToken,
       expiresAt,
     },
   });
 
-  return verificationToken;
+  // Return rawToken for delivery via email to the user
+  return { ...verificationToken, token: rawToken };
 };
 
 export const generatePasswordResetToken = async (email: string) => {
-  const token = crypto.randomBytes(32).toString("hex");
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour
 
   const existingToken = await prisma.passwordResetToken.findFirst({
@@ -43,10 +50,11 @@ export const generatePasswordResetToken = async (email: string) => {
   const passwordResetToken = await prisma.passwordResetToken.create({
     data: {
       email,
-      token,
+      token: hashedToken,
       expiresAt,
     },
   });
 
-  return passwordResetToken;
+  // Return rawToken for delivery via email to the user
+  return { ...passwordResetToken, token: rawToken };
 };
