@@ -26,10 +26,14 @@ export default async function TeamPage() {
     orderBy: { createdAt: "asc" }
   })
 
-  const pendingInvitations = await prisma.invitation.findMany({
-    where: { organizationId: session.user.organizationId },
-    orderBy: { createdAt: "desc" }
-  })
+  const canManageTeam = session.user.role === "OWNER" || session.user.role === "ADMIN"
+
+  const pendingInvitations = canManageTeam
+    ? await prisma.invitation.findMany({
+        where: { organizationId: session.user.organizationId },
+        orderBy: { createdAt: "desc" }
+      })
+    : []
 
   return (
     <div className="min-h-screen bg-[#070B14] p-8 text-white font-sans">

@@ -21,6 +21,24 @@ export async function createTask(projectId: string, data: TaskData) {
   if (session.user.role === "MEMBER") return { error: "Forbidden" }
   if (!data.title?.trim()) return { error: "Title is required" }
 
+  let projectOwnerId: string | null = null
+
+  if (projectId !== "GLOBAL") {
+    const project = await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        organizationId: session.user.organizationId
+      },
+      select: { id: true, ownerId: true }
+    })
+
+    if (!project) {
+      return { error: "Forbidden: Project not found in your organization" }
+    }
+
+    projectOwnerId = project.ownerId
+  }
+
   try {
     const task = await prisma.task.create({
       data: {
@@ -43,21 +61,15 @@ export async function createTask(projectId: string, data: TaskData) {
     })
 
     // Notify Project Owner if the actor is not the owner
-    if (projectId !== "GLOBAL") {
+    if (projectOwnerId && projectOwnerId !== session.user.id) {
       try {
-        const project = await prisma.project.findUnique({
-          where: { id: projectId },
-          select: { ownerId: true }
+        await createNotification({
+          userId: projectOwnerId,
+          organizationId: session.user.organizationId,
+          type: "TASK_CREATED",
+          message: `A new task '${task.title}' was added to your project.`,
+          link: `/dashboard/projects/${projectId}`
         })
-        if (project?.ownerId) {
-          await createNotification({
-            userId: project.ownerId,
-            organizationId: session.user.organizationId,
-            type: "TASK_CREATED",
-            message: `A new task '${task.title}' was added to your project.`,
-            link: `/dashboard/projects/${projectId}`
-          })
-        }
       } catch (err) {
         console.error("Failed to notify project owner:", err)
       }

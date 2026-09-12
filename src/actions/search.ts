@@ -42,6 +42,13 @@ export async function globalSearch(query: string) {
         { email: { contains: q, mode: 'insensitive' } }
       ]
     },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+    },
     take: 5
   })
 

@@ -1,18 +1,48 @@
 import type { NextAuthConfig } from "next-auth";
+const PUBLIC_ROUTES = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/api/auth",
+  "/api/keepalive",
+  "/api/health",
+  "/invite",
+];
+
 export const authConfig = {
   pages: {
     signIn: "/login",
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
+      const { pathname } = nextUrl;
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
 
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+      const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+
+      if (isPublicRoute) {
+        // Redirect authenticated users trying to access auth pages back to dashboard
+        if (isLoggedIn && (pathname === "/login" || pathname === "/register")) {
+          return Response.redirect(new URL("/dashboard", nextUrl));
+        }
+        return true;
       }
-      return true;
+
+      // Allow authenticated users to access protected routes
+      if (isLoggedIn) {
+        return true;
+      }
+
+      // Strict Default-Deny:
+      // For unauthenticated API calls, reject with 401 Unauthorized
+      if (pathname.startsWith("/api/")) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      // For unauthenticated page visits, return false (NextAuth will redirect to signIn page)
+      return false;
     },
     async jwt({ token, user, trigger, session }) {
       if (user) {
