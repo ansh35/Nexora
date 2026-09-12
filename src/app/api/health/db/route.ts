@@ -1,9 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const secretKey = req.headers.get("x-keepalive-key");
+  const expectedSecret = process.env.KEEPALIVE_SECRET;
+
+  if (!expectedSecret || secretKey !== expectedSecret) {
+    return NextResponse.json(
+      { status: "error", message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     // Use $runCommandRaw or a lightweight ping instead of exposing counts
     await prisma.$runCommandRaw({ ping: 1 });

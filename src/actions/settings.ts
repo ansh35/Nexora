@@ -60,8 +60,8 @@ export async function updatePassword(formData: FormData) {
       return { error: "Current password is incorrect" }
     }
 
-    if (newPassword.length < 8 || newPassword.length > 10) {
-      return { error: "New password must be between 8 and 10 characters long" }
+    if (newPassword.length < 8 || newPassword.length > 128) {
+      return { error: "New password must be between 8 and 128 characters long" }
     }
 
     const hashedNewPassword = await bcryptjs.hash(newPassword, 10)

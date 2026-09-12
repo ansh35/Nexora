@@ -180,14 +180,12 @@ export async function resetPasswordRequest(email: string) {
       where: { email }
     })
 
-    if (!existingUser) {
-      return { error: "Email not found!" }
+    if (existingUser) {
+      const passwordResetToken = await generatePasswordResetToken(email)
+      await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
     }
 
-    const passwordResetToken = await generatePasswordResetToken(email)
-    await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
-
-    return { success: "Reset email sent!" }
+    return { success: "If an account with that email exists, a password reset link has been sent." }
   } catch (error) {
     console.error("Reset Request Error:", error)
     return { error: "Something went wrong sending reset email" }

@@ -19,14 +19,16 @@ export async function getActivities(page = 1, limit = 20) {
       whereClause.userId = session.user.id
     }
 
-    const skip = (page - 1) * limit
+    const safePage = Math.max(1, Math.floor(Number(page) || 1))
+    const safeLimit = Math.min(100, Math.max(1, Math.floor(Number(limit) || 20)))
+    const skip = (safePage - 1) * safeLimit
     
     const [activities, total] = await Promise.all([
       prisma.activity.findMany({
         where: whereClause,
         orderBy: { createdAt: "desc" },
         skip,
-        take: limit,
+        take: safeLimit,
         include: {
           user: {
             select: { name: true, email: true, image: true }
@@ -38,8 +40,8 @@ export async function getActivities(page = 1, limit = 20) {
 
     return {
       activities,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page
+      totalPages: Math.ceil(total / safeLimit),
+      currentPage: safePage
     }
   } catch (error) {
     console.error("Failed to get activities", error)
