@@ -1,5 +1,5 @@
 import { aiProvider } from "./groq-provider"
-import { schemas } from "./validators"
+import { schemas, zodSchemas } from "./validators"
 
 export async function executeProjectPlan(name: string, description: string) {
   const prompt = `Create a high-level project plan for the following project.
@@ -12,6 +12,7 @@ export async function executeProjectPlan(name: string, description: string) {
 
   return await aiProvider.generateStructuredResponse<{phases: {name: string, description: string, tasks: string[]}[]}>(
     prompt, 
-    schemas.projectPlan
+    schemas.projectPlan,
+    zodSchemas.projectPlan
   )
 }

@@ -1,5 +1,5 @@
 import { aiProvider } from "./groq-provider"
-import { schemas } from "./validators"
+import { schemas, zodSchemas } from "./validators"
 
 export async function executeTaskBreakdown(title: string, description: string) {
   const prompt = `Break down the following task into 3-5 smaller actionable subtasks.
@@ -12,6 +12,7 @@ export async function executeTaskBreakdown(title: string, description: string) {
   
   return await aiProvider.generateStructuredResponse<{subtasks: {title: string, description: string}[]}>(
     prompt, 
-    schemas.taskBreakdown
+    schemas.taskBreakdown,
+    zodSchemas.taskBreakdown
   )
 }

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const schemas = {
   taskBreakdown: `
   {
@@ -58,3 +60,56 @@ export const schemas = {
     "description": "A clear, concise, enterprise-appropriate description"
   }`
 }
+
+export const zodSchemas = {
+  taskBreakdown: z.object({
+    subtasks: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+      })
+    ),
+  }),
+  projectPlan: z.object({
+    phases: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        tasks: z.array(z.string()),
+      })
+    ),
+  }),
+  meetingNotes: z.object({
+    tasks: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        priority: z.string(),
+      })
+    ),
+  }),
+  taskSummaries: z.object({
+    summary: z.string(),
+    blockers: z.array(z.string()),
+    nextSteps: z.array(z.string()),
+  }),
+  riskDetection: z.object({
+    risks: z.array(
+      z.object({
+        title: z.string(),
+        severity: z.string(),
+        mitigation: z.string(),
+      })
+    ),
+  }),
+  sprintGenerator: z.object({
+    sprintGoal: z.string(),
+    selectedTaskIds: z.array(z.string()),
+  }),
+  titleEnhancement: z.object({
+    title: z.string(),
+  }),
+  descriptionGeneration: z.object({
+    description: z.string(),
+  }),
+};

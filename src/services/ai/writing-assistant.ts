@@ -1,5 +1,5 @@
 import { aiProvider } from "./groq-provider"
-import { schemas } from "./validators"
+import { schemas, zodSchemas } from "./validators"
 
 export async function executeTitleEnhancement(currentTitle: string, context: string) {
   const prompt = `You are a Senior AI Product Engineer acting as an intelligent writing assistant. 
@@ -15,7 +15,8 @@ export async function executeTitleEnhancement(currentTitle: string, context: str
   
   return await aiProvider.generateStructuredResponse<{title: string}>(
     prompt, 
-    schemas.titleEnhancement
+    schemas.titleEnhancement,
+    zodSchemas.titleEnhancement
   )
 }
 
@@ -33,6 +34,7 @@ export async function executeDescriptionGeneration(title: string, context: strin
   
   return await aiProvider.generateStructuredResponse<{description: string}>(
     prompt, 
-    schemas.descriptionGeneration
+    schemas.descriptionGeneration,
+    zodSchemas.descriptionGeneration
   )
 }

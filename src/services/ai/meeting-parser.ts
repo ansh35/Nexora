@@ -1,5 +1,5 @@
 import { aiProvider } from "./groq-provider"
-import { schemas } from "./validators"
+import { schemas, zodSchemas } from "./validators"
 
 export async function executeMeetingParser(notes: string) {
   const prompt = `Extract action items from the following meeting notes and convert them into specific tasks.
@@ -12,6 +12,7 @@ export async function executeMeetingParser(notes: string) {
 
   return await aiProvider.generateStructuredResponse<{tasks: {title: string, description: string, priority: string}[]}>(
     prompt, 
-    schemas.meetingNotes
+    schemas.meetingNotes,
+    zodSchemas.meetingNotes
   )
 }

@@ -1,5 +1,5 @@
 import { aiProvider } from "./groq-provider"
-import { schemas } from "./validators"
+import { schemas, zodSchemas } from "./validators"
 
 export async function executeRiskAnalysis(tasksJson: string) {
   const prompt = `Analyze these tasks and identify potential risks to the project schedule, scope, or quality.
@@ -12,6 +12,7 @@ export async function executeRiskAnalysis(tasksJson: string) {
 
   return await aiProvider.generateStructuredResponse<{risks: {title: string, severity: string, mitigation: string}[]}>(
     prompt, 
-    schemas.riskDetection
+    schemas.riskDetection,
+    zodSchemas.riskDetection
   )
 }
