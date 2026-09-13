@@ -20,6 +20,8 @@ export async function createTask(projectId: string, data: TaskData) {
   if (!session?.user?.organizationId) return { error: "Unauthorized" }
   if (session.user.role === "MEMBER") return { error: "Forbidden" }
   if (!data.title?.trim()) return { error: "Title is required" }
+  if (data.title.trim().length > 255) return { error: "Title cannot exceed 255 characters" }
+  if (data.description && data.description.length > 5000) return { error: "Description cannot exceed 5,000 characters" }
 
   let projectOwnerId: string | null = null
 
@@ -97,6 +99,8 @@ export async function editTask(id: string, data: TaskData) {
   if (!session?.user?.organizationId) return { error: "Unauthorized" }
   if (session.user.role === "MEMBER") return { error: "Forbidden" }
   if (!data.title?.trim()) return { error: "Title is required" }
+  if (data.title.trim().length > 255) return { error: "Title cannot exceed 255 characters" }
+  if (data.description && data.description.length > 5000) return { error: "Description cannot exceed 5,000 characters" }
 
   try {
     const task = await prisma.task.findFirst({

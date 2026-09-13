@@ -5,8 +5,7 @@ import { getCurrentOrganization } from "@/lib/org"
 import prisma from "@/lib/prisma"
 import { ProjectDashboard } from "@/components/projects/ProjectDashboard"
 import { WelcomeOnboarding } from "@/components/dashboard/WelcomeOnboarding"
-import { EmptyState } from "@/components/ui/EmptyState"
-import { FolderPlus, User as UserIcon } from "lucide-react"
+import { User as UserIcon } from "lucide-react"
 import Link from "next/link"
 import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidget"
 import { NotificationPopover } from "@/components/dashboard/NotificationPopover"
@@ -117,20 +116,7 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Your Projects</h2>
             </div>
-          {projects.length === 0 ? (
-            <div className="mt-8">
-              <EmptyState 
-                icon={FolderPlus}
-                title="No projects yet"
-                description="Get started by creating your first project. Projects help you organize tasks and collaborate with your team."
-              />
-              <div className="mt-8">
-                <ProjectDashboard initialProjects={projects} userRole={session.user.role} />
-              </div>
-            </div>
-          ) : (
             <ProjectDashboard initialProjects={projects} userRole={session.user.role} />
-          )}
           </main>
           
           <div className="lg:col-span-1">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { getActivities } from "@/actions/activity"
 import { formatDistanceToNow, format } from "date-fns"
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { EmptyState } from "@/components/feedback/empty-state"
 
 type Activity = {
   id: string
@@ -67,6 +68,16 @@ export function ActivityTimeline() {
     )
   }
 
+  if (activities.length === 0) {
+    return (
+      <EmptyState
+        icon="inbox"
+        title="No activity recorded"
+        description="Activity logs will appear here as your team creates projects, assigns tasks, and collaborates."
+      />
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -81,7 +92,7 @@ export function ActivityTimeline() {
             {/* Timeline dot */}
             <div className="absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#22D3EE] shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
             
-            <div className="bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all p-4 hover:bg-white/[0.04] transition-colors">
+            <div className="bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all p-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-sm font-medium text-white overflow-hidden border border-white/10">

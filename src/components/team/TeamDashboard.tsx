@@ -212,55 +212,62 @@ function TeamDashboardContent({
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
-            {filteredMembers.map(member => (
-              <div key={member.id} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all hover:bg-white/[0.04] transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold">
-                    {member.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
-                      {member.name}
-                      {member.id === currentUserId && (
-                        <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-neutral-300">You</span>
-                      )}
-                    </h3>
-                    <p className="text-xs text-neutral-400">{member.email}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Shield className={`w-3.5 h-3.5 ${member.role === 'OWNER' ? 'text-red-400' : member.role === 'ADMIN' ? 'text-orange-400' : 'text-blue-400'}`} />
-                    <select
-                      suppressHydrationWarning
-                      value={member.role}
-                      disabled={!canManageRolesAndRemove || member.id === currentUserId || isPending}
-                      onChange={(e) => handleRoleChange(member.id, e.target.value)}
-                      className="bg-transparent border-none text-sm text-neutral-300 focus:ring-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <option value="MEMBER" className="bg-[#070B14]">Member</option>
-                      <option value="ADMIN" className="bg-[#070B14]">Admin</option>
-                      <option value="OWNER" className="bg-[#070B14]">Owner</option>
-                    </select>
+          {filteredMembers.length === 0 ? (
+            <EmptyState
+              title={searchQuery ? "No members found" : "No team members"}
+              description={searchQuery ? "Try searching for a different name or email." : "No team members in this organization."}
+            />
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredMembers.map(member => (
+                <div key={member.id} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/10 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] transition-all">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold">
+                      {member.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                        {member.name}
+                        {member.id === currentUserId && (
+                          <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-neutral-300">You</span>
+                        )}
+                      </h3>
+                      <p className="text-xs text-neutral-400">{member.email}</p>
+                    </div>
                   </div>
 
-                  {canManageRolesAndRemove && member.id !== currentUserId && (
-                    <button
-                      suppressHydrationWarning
-                      onClick={() => handleRemove(member.id)}
-                      disabled={isPending}
-                      className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-                      title="Remove Member"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Shield className={`w-3.5 h-3.5 ${member.role === 'OWNER' ? 'text-red-400' : member.role === 'ADMIN' ? 'text-orange-400' : 'text-blue-400'}`} />
+                      <select
+                        suppressHydrationWarning
+                        value={member.role}
+                        disabled={!canManageRolesAndRemove || member.id === currentUserId || isPending}
+                        onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                        className="bg-transparent border-none text-sm text-neutral-300 focus:ring-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="MEMBER" className="bg-[#070B14]">Member</option>
+                        <option value="ADMIN" className="bg-[#070B14]">Admin</option>
+                        <option value="OWNER" className="bg-[#070B14]">Owner</option>
+                      </select>
+                    </div>
+
+                    {canManageRolesAndRemove && member.id !== currentUserId && (
+                      <button
+                        suppressHydrationWarning
+                        onClick={() => handleRemove(member.id)}
+                        disabled={isPending}
+                        className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                        title="Remove Member"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

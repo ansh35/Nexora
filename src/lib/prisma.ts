@@ -17,9 +17,7 @@ if (process.env.NODE_ENV !== "production") {
   globalThis.prismaGlobal = prisma;
 }
 
-// Just for development purposes: verify connection and print to console
 if (process.env.NODE_ENV !== "production" && isFirstRun) {
   prisma.$connect()
-    .then(() => console.log("✅ Database connected successfully!"))
     .catch((err) => console.error("❌ Database connection failed:", err));
 }

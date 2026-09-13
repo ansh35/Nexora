@@ -16,9 +16,13 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   workspaceName: z.string().min(2, {
     message: "Workspace name must be at least 2 characters.",
+  }).max(100, {
+    message: "Workspace name cannot exceed 100 characters.",
   }),
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
+  }).max(100, {
+    message: "Name cannot exceed 100 characters.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",

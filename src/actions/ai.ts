@@ -59,6 +59,9 @@ export async function generateProjectPlan(name: string, description: string) {
 
 export async function parseMeetingNotes(projectId: string, notes: string) {
   try {
+    if (!notes?.trim()) throw new Error("Meeting notes are required")
+    if (notes.length > 10000) throw new Error("Meeting notes cannot exceed 10,000 characters")
+
     const { organizationId, userId } = await verifyAccessAndQuota()
     
     const project = await prisma.project.findUnique({

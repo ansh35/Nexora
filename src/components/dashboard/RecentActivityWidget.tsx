@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getActivities } from "@/actions/activity"
 import { formatDistanceToNow } from "date-fns"
 import { Activity as ActivityIcon } from "lucide-react"
+import Link from "next/link"
 
 export async function RecentActivityWidget() {
   const res = await getActivities(1, 5) // Fetch top 5
@@ -33,13 +33,13 @@ export async function RecentActivityWidget() {
           <ActivityIcon className="w-4 h-4 text-[#22D3EE]" />
           Recent Activity
         </h3>
-        <a href="/dashboard/activity" className="text-xs text-[#22D3EE] hover:underline">
+        <Link href="/dashboard/activity" className="text-xs text-[#22D3EE] hover:underline">
           View All
-        </a>
+        </Link>
       </div>
 
       <div className="space-y-4 flex-1">
-        {res.activities.map((activity: any) => (
+        {res.activities.map((activity) => (
           <div key={activity.id} className="flex gap-3">
             <div className="w-8 h-8 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-xs font-medium text-white overflow-hidden border border-white/10">
               {activity.user.image ? (

@@ -242,6 +242,16 @@ export async function acceptInvitation(token: string) {
       return { error: "This invitation is for a different email address." }
     }
 
+    // Multi-Tenant Sole Owner check: Prevent leaving an organization with 0 owners
+    if (session.user.role === "OWNER" && session.user.organizationId) {
+      const ownerCount = await prisma.user.count({
+        where: { organizationId: session.user.organizationId, role: "OWNER" }
+      })
+      if (ownerCount <= 1) {
+        return { error: "Cannot accept invite: You are the sole owner of your workspace. Please transfer ownership before switching organizations." }
+      }
+    }
+
     // Unassign tasks from the user's old org just in case they were assigned (optional cleanup)
     await prisma.task.updateMany({
       where: { assigneeId: session.user.id },

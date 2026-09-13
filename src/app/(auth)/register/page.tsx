@@ -16,7 +16,13 @@ export default function RegisterPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const rawCallback = searchParams.get("callbackUrl")
-  const callbackUrl = rawCallback?.startsWith("/") ? rawCallback : "/dashboard"
+  const isSafeRelativeUrl =
+    Boolean(rawCallback) &&
+    rawCallback!.startsWith("/") &&
+    !rawCallback!.startsWith("//") &&
+    !rawCallback!.startsWith("/\\")
+
+  const callbackUrl = isSafeRelativeUrl ? rawCallback! : "/dashboard"
 
   const [error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")

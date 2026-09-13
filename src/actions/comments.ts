@@ -9,6 +9,7 @@ export async function addComment(taskId: string, content: string) {
   
   if (!session?.user?.organizationId) return { error: "Unauthorized" }
   if (!content?.trim()) return { error: "Content is required" }
+  if (content.length > 2000) return { error: "Comment cannot exceed 2,000 characters" }
 
   try {
     const task = await prisma.task.findFirst({

@@ -175,14 +175,30 @@ export async function verifyEmail(token: string) {
   }
 }
 
+const resetCooldownMap = new Map<string, number>()
+
 export async function resetPasswordRequest(email: string) {
   try {
+    const normalizedEmail = email ? email.trim().toLowerCase() : ""
+    if (!normalizedEmail) {
+      return { error: "Email is required" }
+    }
+
+    const now = Date.now()
+    const lastRequestTime = resetCooldownMap.get(normalizedEmail) || 0
+
+    // Cooldown check: maximum 1 reset email per 60 seconds per email
+    if (now - lastRequestTime < 60000) {
+      return { success: "If an account with that email exists, a password reset link has been sent." }
+    }
+    resetCooldownMap.set(normalizedEmail, now)
+
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     })
 
     if (existingUser) {
-      const passwordResetToken = await generatePasswordResetToken(email)
+      const passwordResetToken = await generatePasswordResetToken(normalizedEmail)
       await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
     }
 

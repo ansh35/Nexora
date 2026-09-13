@@ -2,13 +2,11 @@
 
 import { useState } from "react"
 import { acceptInvitation } from "@/actions/team"
-import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
 export function AcceptInviteButton({ token }: { token: string }) {
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState("")
-  const router = useRouter()
 
   const handleAccept = async () => {
     setIsPending(true)
@@ -20,7 +18,7 @@ export function AcceptInviteButton({ token }: { token: string }) {
       setError(res.error)
       setIsPending(false)
     } else {
-      router.push("/dashboard")
+      window.location.href = "/dashboard"
     }
   }
 
